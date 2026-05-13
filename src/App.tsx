@@ -1002,7 +1002,7 @@ const Footer = () => {
   return (
     <footer className="bg-black text-white py-12 px-6 border-t border-white/5">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-        <div className="text-xl font-black italic">GAMELEIRA FC</div>
+        <div className="text-xl font-black italic">GAMELEIRA</div>
         <div className="text-[10px] uppercase tracking-[0.3em] opacity-40 text-center md:text-left">
           © {new Date().getFullYear()} Associação Esportiva Gameleira. <br className="md:hidden" /> todos os direitos reservados.
         </div>
