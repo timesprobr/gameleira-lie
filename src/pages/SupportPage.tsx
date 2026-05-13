@@ -15,6 +15,7 @@ import {
   HelpCircle,
   FileText
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function SupportPage() {
   // Calculator state
@@ -43,14 +44,80 @@ export default function SupportPage() {
 
   const est = calculateEstimation();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!authorized) {
       alert('Por favor, autorize o contato para prosseguirmos com a análise.');
       return;
     }
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+
+    const razao_social = (fd.get('razao_social') as string) || '';
+    const cnpj = (fd.get('cnpj') as string) || '';
+    const nome_responsavel = (fd.get('nome_responsavel') as string) || '';
+    const cargo = (fd.get('cargo') as string) || '';
+    const telefone = (fd.get('telefone') as string) || '';
+    const email = (fd.get('email') as string) || '';
+
+    // Agrupar observações e metadados no JSON para preservar 100% dos campos
+    const observacoesObj = {
+      nome_fantasia: fd.get('nome_fantasia'),
+      ie: fd.get('ie'),
+      segmento: fd.get('segmento'),
+      qtd_func: fd.get('qtd_func'),
+      cep: fd.get('cep'),
+      endereco: fd.get('endereco'),
+      numero: fd.get('numero'),
+      cidade: fd.get('cidade'),
+      estado: fd.get('estado'),
+      contador_nome: fd.get('contador_nome'),
+      contador_escritorio: fd.get('contador_escritorio'),
+      contador_telefone: fd.get('contador_telefone'),
+      contador_email: fd.get('contador_email'),
+      faixa_icms: icmsRange,
+      recolhe_icms_mg: recolheIcms,
+      interesse_principal: interest,
+      icms_simulador_base: calcIcms,
+      regime_simulador_base: calcRegime
+    };
+
+    const observacoes_internas = JSON.stringify(observacoesObj, null, 2);
+
+    // Calcular o potencial para exibição analítica no DB
+    const icms_mensal_estimado = parseFloat(calcIcms) || 0;
+    const potencial_anual_estimado = icms_mensal_estimado * 0.03 * 12;
+
+    try {
+      const { error } = await supabase.from('empresas_leads').insert([
+        {
+          razao_social,
+          cnpj,
+          nome_responsavel,
+          cargo,
+          email,
+          telefone,
+          icms_mensal_estimado,
+          regime_tributario: calcRegime,
+          potencial_anual_estimado,
+          status: 'pendente_analise',
+          observacoes_internas
+        }
+      ]);
+
+      if (error) {
+        console.error('Erro Supabase insert:', error);
+        alert('Ocorreu um erro ao enviar seu cadastro. Por favor, tente novamente ou nos chame no WhatsApp.');
+        return;
+      }
+
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      console.error('Erro de conexão:', err);
+      alert('Ocorreu um erro inesperado de conexão.');
+    }
   };
 
   return (
@@ -495,27 +562,27 @@ export default function SupportPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Razão Social *</label>
-                      <input required type="text" placeholder="Ex: Empresa Exemplo S/A" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="razao_social" type="text" placeholder="Ex: Empresa Exemplo S/A" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Nome Fantasia *</label>
-                      <input required type="text" placeholder="Ex: Exemplo" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="nome_fantasia" type="text" placeholder="Ex: Exemplo" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">CNPJ *</label>
-                      <input required type="text" placeholder="00.000.000/0000-00" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="cnpj" type="text" placeholder="00.000.000/0000-00" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Inscrição Estadual *</label>
-                      <input required type="text" placeholder="Número da IE" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="ie" type="text" placeholder="Número da IE" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Segmento da Empresa</label>
-                      <input type="text" placeholder="Ex: Indústria, Comércio, Varejo" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input name="segmento" type="text" placeholder="Ex: Indústria, Comércio, Varejo" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Quantidade de Funcionários</label>
-                      <input type="text" placeholder="Ex: 50 a 200" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input name="qtd_func" type="text" placeholder="Ex: 50 a 200" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                   </div>
                 </div>
@@ -529,23 +596,23 @@ export default function SupportPage() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">CEP *</label>
-                      <input required type="text" placeholder="00000-000" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="cep" type="text" placeholder="00000-000" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div className="md:col-span-2">
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Endereço *</label>
-                      <input required type="text" placeholder="Rua, Avenida" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="endereco" type="text" placeholder="Rua, Avenida" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Número *</label>
-                      <input required type="text" placeholder="Número" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="numero" type="text" placeholder="Número" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Cidade *</label>
-                      <input required type="text" placeholder="Cidade" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="cidade" type="text" placeholder="Cidade" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Estado *</label>
-                      <input required type="text" placeholder="MG" defaultValue="MG" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="estado" type="text" placeholder="MG" defaultValue="MG" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                   </div>
                 </div>
@@ -559,19 +626,19 @@ export default function SupportPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Nome do Responsável *</label>
-                      <input required type="text" placeholder="Nome completo" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="nome_responsavel" type="text" placeholder="Nome completo" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Cargo *</label>
-                      <input required type="text" placeholder="Ex: Diretor, Gerente, Proprietário" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="cargo" type="text" placeholder="Ex: Diretor, Gerente, Proprietário" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">WhatsApp *</label>
-                      <input required type="tel" placeholder="(00) 90000-0000" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="telefone" type="tel" placeholder="(00) 90000-0000" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">E-mail Corporativo *</label>
-                      <input required type="email" placeholder="nome@empresa.com.br" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="email" type="email" placeholder="nome@empresa.com.br" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                   </div>
                 </div>
@@ -592,19 +659,19 @@ export default function SupportPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Nome do Contador</label>
-                      <input type="text" placeholder="Nome completo" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
+                      <input name="contador_nome" type="text" placeholder="Nome completo" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Escritório Contábil</label>
-                      <input type="text" placeholder="Nome do escritório" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
+                      <input name="contador_escritorio" type="text" placeholder="Nome do escritório" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">WhatsApp do Contador</label>
-                      <input type="tel" placeholder="(00) 90000-0000" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
+                      <input name="contador_telefone" type="tel" placeholder="(00) 90000-0000" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">E-mail do Contador</label>
-                      <input type="email" placeholder="contador@escritorio.com.br" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
+                      <input name="contador_email" type="email" placeholder="contador@escritorio.com.br" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
                     </div>
                   </div>
                 </div>
