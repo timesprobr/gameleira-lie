@@ -85,7 +85,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-4">
           <a 
-            href="#contato"
+            href="/apoiar"
             className="hidden sm:block bg-white text-black px-6 py-2.5 text-[10px] font-black uppercase tracking-widest hover:bg-neutral-200 transition-all rounded-full"
           >
             Quero Apoiar
@@ -120,7 +120,7 @@ const Navbar = () => {
                 </a>
               ))}
               <a 
-                href="#contato"
+                href="/apoiar"
                 onClick={() => setIsOpen(false)}
                 className="bg-white text-black px-6 py-4 text-center text-xs font-black uppercase tracking-widest mt-4"
               >
@@ -228,7 +228,7 @@ const VideoPitchSection = () => {
           </div>
 
           <a 
-            href="#contato" 
+            href="/apoiar" 
             className="inline-flex items-center gap-2 bg-white text-black px-10 py-5 text-sm md:text-base font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all rounded-xl shadow-[0_0_30px_rgba(255,255,255,0.2)]"
           >
             Quero Apoiar <ArrowRight className="w-5 h-5" />
@@ -564,7 +564,7 @@ const SuccessCasesBlock = () => {
 
           <div className="text-center mt-10">
             <a 
-              href="#contato"
+              href="/apoiar"
               className="inline-flex items-center gap-3 bg-black text-white hover:bg-neutral-800 font-bold px-8 py-4 rounded-full text-sm md:text-base tracking-tight shadow-xl hover:shadow-2xl transition-all hover:-translate-y-0.5 group"
             >
               <span>QUERO APOIAR O GAMELEIRA</span>
@@ -602,45 +602,81 @@ const InstitutionSection = () => {
               Com décadas de atuação, já revelamos talentos que brilharam no cenário nacional, sempre mantendo o compromisso de pés no chão e olhos no futuro comercial e social.
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-8">
-            <div>
-              <div className="text-4xl font-black mb-1 font-serif italic">30+</div>
-              <div className="text-[10px] uppercase tracking-widest opacity-50 font-black">Anos de Luta</div>
-            </div>
-            <div>
-              <div className="text-4xl font-black mb-1 font-serif italic">15</div>
-              <div className="text-[10px] uppercase tracking-widest opacity-50 font-black">Títulos</div>
-            </div>
-            <div>
-              <div className="text-4xl font-black mb-1 font-serif italic">200+</div>
-              <div className="text-[10px] uppercase tracking-widest opacity-50 font-black">Atletas Ativos</div>
+          {/* GALERIA DE TROFÉUS E CONQUISTAS */}
+          <div className="pt-4 border-t border-white/10">
+            <span className="text-[10px] uppercase tracking-[0.3em] font-black text-neutral-400 block mb-4">
+              Nossa Galeria de Conquistas
+            </span>
+            <div className="grid grid-cols-3 gap-4">
+              {/* Troféu 1 */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center group hover:bg-white/10 transition-colors">
+                <div className="relative mb-2">
+                  <div className="absolute inset-0 bg-neutral-400/20 blur-md rounded-full" />
+                  <Trophy className="w-10 h-10 text-neutral-300 group-hover:scale-110 transition-transform relative z-10" strokeWidth={1.5} />
+                </div>
+                <div className="text-[11px] font-black uppercase tracking-wider text-center text-white mt-1">
+                  Copa Regional
+                </div>
+                <span className="text-[9px] text-neutral-400 font-bold tracking-widest block uppercase mt-0.5">Títulos Invicto</span>
+              </div>
+
+              {/* Troféu 2 (Destaque Central) */}
+              <div className="bg-gradient-to-b from-white/10 to-white/5 border border-white/20 rounded-2xl p-4 flex flex-col items-center justify-center group hover:border-white/40 transition-colors relative overflow-hidden">
+                <div className="absolute top-0 w-12 h-1 bg-gradient-to-r from-transparent via-white to-transparent" />
+                <div className="relative mb-2 flex items-center justify-center">
+                  <div className="absolute w-12 h-12 bg-white/10 blur-xl rounded-full" />
+                  <div className="flex items-end gap-1 relative z-10">
+                    <Trophy className="w-6 h-6 text-neutral-400 opacity-60" strokeWidth={1.5} />
+                    <Trophy className="w-12 h-12 text-white group-hover:scale-110 transition-transform" strokeWidth={2} />
+                    <Trophy className="w-6 h-6 text-neutral-400 opacity-60" strokeWidth={1.5} />
+                  </div>
+                </div>
+                <div className="text-[11px] font-black uppercase tracking-wider text-center text-transparent bg-clip-text bg-gradient-to-r from-neutral-200 via-neutral-400 to-neutral-100 mt-1">
+                  Galeria Oficial
+                </div>
+                <span className="text-[9px] text-neutral-400 font-bold tracking-widest block uppercase mt-0.5">15 Taças Conquistadas</span>
+              </div>
+
+              {/* Troféu 3 */}
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center group hover:bg-white/10 transition-colors">
+                <div className="relative mb-2">
+                  <div className="absolute inset-0 bg-neutral-400/20 blur-md rounded-full" />
+                  <Trophy className="w-10 h-10 text-neutral-300 group-hover:scale-110 transition-transform relative z-10" strokeWidth={1.5} />
+                </div>
+                <div className="text-[11px] font-black uppercase tracking-wider text-center text-white mt-1">
+                  Talento Mineiro
+                </div>
+                <span className="text-[9px] text-neutral-400 font-bold tracking-widest block uppercase mt-0.5">Reconhecimento</span>
+              </div>
             </div>
           </div>
         </div>
         
         <div className="w-full md:w-1/2 relative group">
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="aspect-square border border-white/10 p-12 flex items-center justify-center bg-neutral-900 overflow-hidden relative"
-          >
-             {/* Simple Tree SVG placeholder background */}
-             <svg className="absolute inset-0 w-full h-full opacity-5" viewBox="0 0 100 100" fill="currentColor">
-               <path d="M50 10 L70 90 L30 90 Z" />
-               <circle cx="50" cy="40" r="30" />
-             </svg>
-             
-             <div className="z-10 flex flex-col items-center">
-                <div className="w-48 h-48 border-[6px] border-white flex items-center justify-center mb-10 relative bg-black/40 p-4">
-                   <div className="absolute -top-3 -left-3 w-6 h-6 bg-white" />
-                   <div className="absolute -bottom-3 -right-3 w-6 h-6 bg-white" />
-                   <img src="/escudo.png" alt="Escudo GAMELEIRA" className="w-full h-full object-contain" />
-                </div>
-                <div className="text-[10px] font-black uppercase tracking-[0.6em] text-center opacity-80">
-                   RESPEITA MINHA HISTÓRIA
-                </div>
-             </div>
-          </motion.div>
-          <div className="absolute -z-10 top-8 left-8 w-full h-full border border-white/5" />
+          {/* O Vídeo do Gameleira incorporado */}
+          <div className="aspect-video w-full rounded-2xl overflow-hidden border border-white/20 shadow-2xl bg-neutral-900 relative z-10">
+            <iframe 
+              width="100%" 
+              height="100%" 
+              src="https://www.youtube.com/embed/b-T8Jz5-X_c?si=embed" 
+              title="GAMELEIRA INSTITUCIONAL" 
+              frameBorder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              referrerPolicy="strict-origin-when-cross-origin" 
+              allowFullScreen>
+            </iframe>
+          </div>
+
+          {/* Adesivo / Badge do Escudo sobreposto no canto superior direito */}
+          <div className="absolute -top-6 -right-4 md:-right-6 z-20 w-24 h-24 md:w-28 md:h-28 bg-black border-4 border-white rounded-full flex flex-col items-center justify-center p-3 shadow-2xl transform rotate-12 hover:rotate-0 transition-transform duration-300">
+            <img src="/escudo.png" alt="Escudo GAMELEIRA" className="w-10 h-10 md:w-12 md:h-12 object-contain mb-1 drop-shadow" />
+            <span className="text-[7px] md:text-[8px] font-black tracking-tighter block text-center text-white leading-none">
+              TRADIÇÃO
+            </span>
+          </div>
+
+          {/* Sombra decorativa posterior */}
+          <div className="absolute -z-0 top-4 left-4 w-full h-full border border-white/5 rounded-2xl" />
         </div>
       </div>
     </section>
@@ -701,84 +737,144 @@ const IncentiveLawSection = () => {
           </div>
         </div>
         
-        {/* CARDS */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        {/* CARDS INSTITUCIONAIS DETALHADOS (REQUISITOS E REGRAS) */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
-          {/* Card: Sem impacto */}
-          <div className="bg-black text-white p-6 md:p-8 rounded-3xl flex flex-col shadow-xl">
-            <ArrowRightLeft className="w-8 h-8 md:w-10 md:h-10 mb-4 text-neutral-400" />
-            <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-3 italic">Sem impactar o caixa da empresa</h3>
-            <p className="text-neutral-400 text-xs md:text-sm leading-relaxed mb-6 font-medium">
-              O apoio acontece através do redirecionamento de parte do ICMS que já seria pago ao Estado.
-            </p>
-            <ul className="space-y-3 mt-auto">
-              <li className="flex items-center gap-3 text-xs md:text-sm font-bold text-white bg-white/5 p-3 rounded-xl border border-white/10">
-                <Check className="w-4 h-4 text-white" /> Sem aumento de despesas.
+          {/* Card 1: Quem pode apoiar & Benefícios */}
+          <div className="bg-black text-white p-8 md:p-10 rounded-3xl flex flex-col justify-between shadow-xl relative overflow-hidden border border-neutral-800">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-2xl pointer-events-none" />
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-[10px] font-black uppercase tracking-widest bg-white text-black px-2.5 py-1 rounded">
+                  Elegibilidade
+                </span>
+                <span className="text-xs text-neutral-400 font-bold uppercase tracking-widest">MG</span>
+              </div>
+              <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-3 italic">
+                Quem pode apoiar e Benefício Fiscal
+              </h3>
+              <p className="text-neutral-400 text-xs md:text-sm leading-relaxed mb-6 font-medium">
+                Empresas contribuintes do ICMS em Minas Gerais, apuradoras no regime de <strong>Débito e Crédito</strong>.
+              </p>
+            </div>
+
+            <div className="space-y-3 border-t border-white/10 pt-6">
+              <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+                <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-400 block mb-1">Dedução Padrão</span>
+                <p className="text-xs font-bold text-white">Até 3% do ICMS devido para saldos devedores de até R$ 19.911.600,00 no ano anterior (2% acima desse valor).</p>
+              </div>
+              <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+                <span className="text-[10px] uppercase tracking-widest font-bold text-neutral-400 block mb-1">Limite Estadual</span>
+                <p className="text-xs font-bold text-white">Até 800.000 UFEMGs anuais por Inscrição Estadual.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Requisitos Obrigatórios */}
+          <div className="bg-white border border-neutral-200 p-8 md:p-10 rounded-3xl flex flex-col justify-between shadow-sm">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-[10px] font-black uppercase tracking-widest bg-neutral-900 text-white px-2.5 py-1 rounded">
+                  Obrigatório
+                </span>
+                <span className="text-xs text-neutral-500 font-bold uppercase tracking-widest">Requisitos</span>
+              </div>
+              <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-3 italic text-neutral-900">
+                Requisitos para a Destinação
+              </h3>
+              <p className="text-neutral-600 text-xs md:text-sm leading-relaxed mb-6 font-medium">
+                Para garantir total conformidade e segurança jurídica, a empresa precisa cumprir três critérios básicos estabelecidos pela Secretaria de Estado:
+              </p>
+            </div>
+
+            <ul className="space-y-3.5 border-t border-neutral-100 pt-6">
+              <li className="flex items-start gap-3 text-xs md:text-sm font-bold text-neutral-800">
+                <CheckCircle2 className="w-5 h-5 text-neutral-900 flex-shrink-0 mt-0.5" />
+                <span><strong>Regularidade Fiscal:</strong> Possuir CDT (Certidão de Débitos Tributários) de MG negativa ou positiva com efeito de negativa.</span>
               </li>
-              <li className="flex items-center gap-3 text-xs md:text-sm font-bold text-white bg-white/5 p-3 rounded-xl border border-white/10">
-                <Check className="w-4 h-4 text-white" /> Sem custo adicional.
+              <li className="flex items-start gap-3 text-xs md:text-sm font-bold text-neutral-800">
+                <CheckCircle2 className="w-5 h-5 text-neutral-900 flex-shrink-0 mt-0.5" />
+                <span><strong>ICMS Corrente:</strong> O imposto a ser deduzido deve ser estritamente do período corrente.</span>
+              </li>
+              <li className="flex items-start gap-3 text-xs md:text-sm font-bold text-neutral-800">
+                <CheckCircle2 className="w-5 h-5 text-neutral-900 flex-shrink-0 mt-0.5" />
+                <span><strong>Rastreabilidade:</strong> Depósito identificado e direto na conta bancária oficial do projeto captador.</span>
               </li>
             </ul>
           </div>
 
-          <div className="flex flex-col gap-4 md:gap-6">
-            {/* Card: Exemplo Prático */}
-            <div className="bg-white border border-neutral-200 p-6 md:p-8 rounded-3xl flex flex-col shadow-sm">
-              <TrendingUp className="w-6 h-6 md:w-8 md:h-8 mb-3 text-black" />
-              <h3 className="text-lg md:text-xl font-black uppercase tracking-tighter mb-3 italic text-neutral-900">Exemplo Prático</h3>
-              <div className="bg-neutral-50 border border-neutral-100 p-4 rounded-2xl">
-                <p className="text-neutral-600 text-[11px] md:text-xs leading-relaxed font-medium">
-                  Uma empresa que paga <strong className="text-black bg-neutral-200/50 px-1 rounded">R$ 100 mil de ICMS</strong> pode destinar parte desse valor ao esporte social sem aumentar seus custos, gerando transformação real.
-                </p>
+          {/* Card 3: Prazos e Plataforma */}
+          <div className="bg-white border border-neutral-200 p-8 md:p-10 rounded-3xl flex flex-col justify-between shadow-sm">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-[10px] font-black uppercase tracking-widest bg-neutral-100 text-neutral-800 px-2.5 py-1 rounded border border-neutral-200">
+                  Operacional
+                </span>
+                <span className="text-xs text-neutral-500 font-bold uppercase tracking-widest">SEI!MG</span>
               </div>
-            </div>
-            
-            {/* Card: Quem pode apoiar */}
-            <div className="bg-white border border-neutral-200 p-6 md:p-8 rounded-3xl flex flex-col shadow-sm">
-              <Building className="w-6 h-6 md:w-8 md:h-8 mb-3 text-black" />
-              <h3 className="text-lg md:text-xl font-black uppercase tracking-tighter mb-3 italic text-neutral-900">Empresas que recolhem ICMS</h3>
-              <p className="text-neutral-600 text-[11px] md:text-xs leading-relaxed font-medium">
-                Empresas tributadas pelo ICMS em Minas Gerais podem participar do incentivo fiscal esportivo.
+              <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-3 italic text-neutral-900">
+                Prazos e Sistema Oficial
+              </h3>
+              <p className="text-neutral-600 text-xs md:text-sm leading-relaxed mb-6 font-medium">
+                O fluxo processual tramita de forma transparente e digital dentro dos sistemas do Governo de Minas Gerais.
               </p>
             </div>
+
+            <div className="space-y-4 border-t border-neutral-100 pt-6">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-neutral-100 rounded-lg text-neutral-900 mt-0.5">
+                  <Receipt className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-neutral-900 block">Prazo de Dedução</span>
+                  <p className="text-xs text-neutral-500">A dedução/abatimento do imposto pode ocorrer até 5 anos após a data do repasse financeiro.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-neutral-100 rounded-lg text-neutral-900 mt-0.5">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-neutral-900 block">Plataforma SEI!MG</span>
+                  <p className="text-xs text-neutral-500">Exige cadastro prévio do Representante Legal da empresa e validação por assinatura eletrônica.</p>
+                </div>
+              </div>
+            </div>
           </div>
-          
-          {/* Card: Transparência */}
-          <div className="bg-neutral-900 text-white p-6 md:p-8 rounded-3xl flex flex-col shadow-xl border border-neutral-800">
-            <Search className="w-8 h-8 md:w-10 md:h-10 mb-4 text-neutral-400" />
-            <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-6 italic">Transparência e Prestação de Contas</h3>
-            <ul className="space-y-3 flex-grow font-medium text-xs md:text-sm text-neutral-300">
-              <li className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"><Check className="w-3 h-3 text-white" /></div>
-                Projeto aprovado pelo Estado
+
+          {/* Card 4: Segurança & Multi-Patrocínio */}
+          <div className="bg-neutral-900 text-white p-8 md:p-10 rounded-3xl flex flex-col justify-between shadow-xl border border-neutral-800">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-[10px] font-black uppercase tracking-widest bg-neutral-800 text-neutral-300 px-2.5 py-1 rounded">
+                  Estratégico
+                </span>
+                <span className="text-xs text-neutral-400 font-bold uppercase tracking-widest">Governança</span>
+              </div>
+              <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-3 italic">
+                Múltiplos Projetos e Não-Competição
+              </h3>
+              <p className="text-neutral-400 text-xs md:text-sm leading-relaxed font-medium">
+                A legislação de incentivo foi desenhada para somar forças com o planejamento estratégico corporativo:
+              </p>
+            </div>
+
+            <ul className="space-y-3.5 border-t border-neutral-800 pt-6 mt-6">
+              <li className="flex items-start gap-3 text-xs md:text-sm text-neutral-300">
+                <Check className="w-4 h-4 text-white flex-shrink-0 mt-1" />
+                <span><strong>Sem concorrência de verba:</strong> Os incentivos fiscais da Cultura e do Esporte não competem entre si. A empresa pode utilizar os limites legais de ambos simultaneamente.</span>
               </li>
-              <li className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"><Check className="w-3 h-3 text-white" /></div>
-                Recursos 100% auditados
+              <li className="flex items-start gap-3 text-xs md:text-sm text-neutral-300">
+                <Check className="w-4 h-4 text-white flex-shrink-0 mt-1" />
+                <span><strong>Multi-Apoio:</strong> Um mesmo CNPJ/Inscrição Estadual pode atuar como patrocinador de vários projetos esportivos distintos.</span>
               </li>
-              <li className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"><Check className="w-3 h-3 text-white" /></div>
-                Prestação de contas obrigatória
-              </li>
-              <li className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"><Check className="w-3 h-3 text-white" /></div>
-                Aplicação monitorada
-              </li>
-              <li className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0"><Check className="w-3 h-3 text-white" /></div>
-                Execução fiscalizada (SEDESE-MG)
+              <li className="flex items-start gap-3 text-xs md:text-sm text-neutral-300">
+                <Check className="w-4 h-4 text-white flex-shrink-0 mt-1" />
+                <span><strong>Retorno ODS:</strong> Fortalece relatórios de sustentabilidade e metas de impacto local (Saúde, Bem-estar e Redução de Desigualdades).</span>
               </li>
             </ul>
           </div>
-          
-          {/* Card: Aprovado pelo estado */}
-          <div className="bg-white border border-neutral-200 p-6 md:p-8 rounded-3xl flex flex-col shadow-sm">
-            <CheckCircle className="w-8 h-8 md:w-10 md:h-10 mb-4 text-black" />
-            <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-4 italic text-neutral-900">Projeto Aprovado pelo Estado</h3>
-            <p className="text-neutral-600 text-xs md:text-sm leading-relaxed font-medium">
-              O projeto é aprovado e acompanhado pela <strong className="text-black">Secretaria de Estado de Desenvolvimento Social de Minas Gerais (SEDESE-MG)</strong>. Todos os recursos possuem prestação de contas e fiscalização oficial.
-            </p>
-          </div>
+
         </div>
 
         {/* Linha Visual de Confiança */}
@@ -818,7 +914,7 @@ const FAQSection = () => {
     },
     {
       q: "O projeto já começou a captar?",
-      a: "Sim, estamos na fase de captação ativa com autorização da SEESP-MG para recebimento de aportes até o fim do exercício fiscal vigente."
+      a: "Sim, estamos captando e realizando o diagnóstico gratuito de viabilidade fiscal das empresas interessadas para alinhar o melhor formato de contrapartida institucional."
     }
   ];
 
@@ -868,7 +964,7 @@ const ContactSection = () => {
         
         <div className="flex flex-col md:flex-row gap-8 justify-center items-center">
            <a 
-            href={`mailto:${import.meta.env.VITE_CONTACT_EMAIL || 'contato@gameleirafc.com.br'}`}
+            href="mailto:contato@gameleirafc.com.br"
             className="flex items-center gap-4 group p-6 bg-neutral-50 hover:bg-black hover:text-white transition-all w-full max-w-sm"
            >
               <div className="w-12 h-12 bg-white border border-neutral-200 flex items-center justify-center text-black">
@@ -881,7 +977,7 @@ const ContactSection = () => {
            </a>
            
            <a 
-            href={`https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER || ''}`}
+            href="https://wa.me/5531999999999"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-4 group p-6 bg-neutral-900 text-white hover:bg-neutral-800 transition-all w-full max-w-sm"
@@ -952,7 +1048,7 @@ export default function App() {
             initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            href="#contato"
+            href="/apoiar"
             className="fixed bottom-8 right-8 z-[60] bg-black text-white p-4 rounded-full shadow-2xl lg:hidden flex items-center justify-center border border-white/20"
           >
             <ArrowRight className="w-6 h-6" />
