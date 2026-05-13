@@ -22,7 +22,8 @@ import {
   BellRing,
   ExternalLink,
   Save,
-  MessageSquare
+  MessageSquare,
+  LogOut
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -56,7 +57,20 @@ const STATUS_OPTIONS = [
   { key: 'captada', label: 'Captada', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 font-bold' }
 ];
 
+const AUTHORIZED_EMAILS = [
+  'contato.auramvp@gmail.com',
+  'timesprobr@gmail.com'
+];
+
 export default function AdminPage() {
+  // Autenticação Magic Link
+  const [session, setSession] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState<boolean>(true);
+  const [inputEmail, setInputEmail] = useState<string>('');
+  const [magicLinkSent, setMagicLinkSent] = useState<boolean>(false);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [authSubmitting, setAuthSubmitting] = useState<boolean>(false);
+
   // Navegação da Sidebar: 'dashboard' | 'empresas' | 'valores'
   const [activeSection, setActiveSection] = useState<'dashboard' | 'empresas' | 'valores'>('dashboard');
   
@@ -78,6 +92,34 @@ export default function AdminPage() {
 
   // Estados de edição em lote para a tela de Valores Captados
   const [batchValues, setBatchValues] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    // Checa sessão inicial
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const email = session?.user?.email || '';
+      if (session && AUTHORIZED_EMAILS.includes(email)) {
+        setSession(session);
+      } else if (session) {
+        // Se houver sessão de e-mail não autorizado, desloga imediatamente
+        supabase.auth.signOut();
+        setSession(null);
+      }
+      setAuthLoading(false);
+    });
+
+    // Escuta redirecionamento/login
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const email = session?.user?.email || '';
+      if (session && AUTHORIZED_EMAILS.includes(email)) {
+        setSession(session);
+      } else {
+        setSession(null);
+      }
+      setAuthLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const fetchLeads = async () => {
     setLoading(true);
@@ -109,8 +151,146 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    fetchLeads();
-  }, []);
+    if (session) {
+      fetchLeads();
+    }
+  }, [session]);
+
+  const handleLoginWithMagicLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthError(null);
+    const emailStr = inputEmail.trim().toLowerCase();
+
+    if (!emailStr) {
+      setAuthError('Por favor, insira seu e-mail corporativo.');
+      return;
+    }
+
+    if (!AUTHORIZED_EMAILS.includes(emailStr)) {
+      setAuthError('Acesso restrito: Este e-mail não possui permissão de administrador no sistema.');
+      return;
+    }
+
+    setAuthSubmitting(true);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: emailStr,
+        options: {
+          emailRedirectTo: window.location.origin + '/admin',
+        },
+      });
+
+      if (error) {
+        setAuthError(error.message);
+      } else {
+        setMagicLinkSent(true);
+      }
+    } catch (err: any) {
+      setAuthError('Erro ao solicitar o Magic Link. Verifique sua conexão e tente novamente.');
+    } finally {
+      setAuthSubmitting(false);
+    }
+  };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center p-6 relative overflow-hidden selection:bg-white selection:text-black">
+        {/* Efeito de luz premium no fundo */}
+        <div className="absolute w-[500px] h-[500px] bg-emerald-500/10 blur-[120px] rounded-full -top-20 -left-20 pointer-events-none" />
+        <div className="absolute w-[400px] h-[400px] bg-neutral-800/20 blur-[100px] rounded-full bottom-0 right-0 pointer-events-none" />
+
+        <div className="max-w-md w-full bg-neutral-950/80 border border-neutral-800/80 backdrop-blur-xl p-8 sm:p-10 rounded-2xl shadow-2xl relative z-10 space-y-8 animate-fade-in">
+          
+          {/* Logo / Brasão */}
+          <div className="flex flex-col items-center gap-3 text-center">
+            <img src="/escudo.png" alt="Gameleira" className="w-14 h-auto drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]" />
+            <div>
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-neutral-500 block">
+                Portal Corporativo
+              </span>
+              <h2 className="text-xl font-black italic tracking-tight text-white uppercase mt-0.5">
+                Acesso Administrativo
+              </h2>
+            </div>
+          </div>
+
+          {magicLinkSent ? (
+            <div className="space-y-6 animate-scale-up text-center pt-2">
+              <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center justify-center mx-auto text-emerald-400">
+                <Check className="w-6 h-6" />
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-base font-bold text-white">Link de Acesso Enviado!</h3>
+                <p className="text-xs text-neutral-400 leading-relaxed">
+                  Enviamos um Magic Link seguro para <strong className="text-white">{inputEmail}</strong>. <br />
+                  Verifique sua caixa de entrada ou spam para entrar com apenas um clique.
+                </p>
+              </div>
+
+              <button
+                onClick={() => setMagicLinkSent(false)}
+                className="text-xs text-neutral-500 hover:text-white underline decoration-neutral-800 underline-offset-4 transition-colors pt-2 block mx-auto cursor-pointer"
+              >
+                Tentar com outro e-mail
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleLoginWithMagicLink} className="space-y-4 pt-2">
+              <div className="space-y-1.5 text-left">
+                <label className="block text-[10px] font-black uppercase tracking-wider text-neutral-400">
+                  E-mail de Acesso
+                </label>
+                <input
+                  type="email"
+                  required
+                  placeholder="nome@empresa.com"
+                  value={inputEmail}
+                  onChange={(e) => { setInputEmail(e.target.value); setAuthError(null); }}
+                  className="w-full bg-neutral-900 border border-neutral-800 focus:border-white rounded-xl px-4 py-3 text-xs text-white placeholder-neutral-600 focus:outline-none transition-colors"
+                />
+              </div>
+
+              {authError && (
+                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-[11px] text-red-400 text-left leading-tight animate-fade-in">
+                  {authError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={authSubmitting}
+                className="w-full bg-white hover:bg-neutral-200 text-black font-black text-xs py-3 rounded-xl transition-all uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+              >
+                {authSubmitting ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                    <span>Enviando Link...</span>
+                  </>
+                ) : (
+                  <span>Receber Magic Link</span>
+                )}
+              </button>
+
+              <div className="text-[10px] text-neutral-600 text-center pt-3 leading-snug">
+                Acesso restrito a administradores autorizados. <br />
+                Nenhuma senha é requerida.
+              </div>
+            </form>
+          )}
+
+        </div>
+      </div>
+    );
+  }
 
   // Obter histórico de comentários do Lead
   const getLeadComments = (lead: CorporateLead | null) => {
@@ -439,8 +619,22 @@ export default function AdminPage() {
         </div>
 
         {/* Rodapé da Sidebar */}
-        <div className="p-4 border-t border-neutral-800/80 bg-neutral-950/20 space-y-3">
-          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-2 text-[10px] text-emerald-400 font-mono text-center truncate">
+        <div className="p-4 border-t border-neutral-800/80 bg-neutral-950/20 space-y-2.5">
+          <div className="flex items-center justify-between gap-1 bg-neutral-950 p-2 rounded-xl border border-neutral-800">
+            <div className="truncate flex-grow">
+              <span className="text-[9px] font-black uppercase text-neutral-500 block">Usuário Live</span>
+              <span className="text-[10px] text-neutral-300 font-mono truncate block">{session?.user?.email}</span>
+            </div>
+            <button 
+              onClick={() => supabase.auth.signOut()}
+              className="p-1.5 hover:bg-neutral-900 rounded-lg text-neutral-500 hover:text-red-400 transition-colors flex-shrink-0 cursor-pointer"
+              title="Encerrar Sessão"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-1.5 text-[9px] text-emerald-400 font-mono text-center truncate">
             ● Supabase Live DB
           </div>
 
