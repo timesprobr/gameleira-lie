@@ -22,18 +22,42 @@ export default function SupportPage() {
   const [calcIcms, setCalcIcms] = useState<string>('20000');
   const [calcRegime, setCalcRegime] = useState<string>('real');
 
-  // Form states
+  // Form states - Radio options
   const [icmsRange, setIcmsRange] = useState<string>('');
   const [recolheIcms, setRecolheIcms] = useState<string>('');
   const [interest, setInterest] = useState<string>('');
   const [authorized, setAuthorized] = useState<boolean>(false);
   const [submitted, setSubmitted] = useState<boolean>(false);
 
+  // Form states - Controlled text inputs with masks and auto-fetch
+  const [cnpj, setCnpj] = useState<string>('');
+  const [cnpjLoading, setCnpjLoading] = useState<boolean>(false);
+  const [razaoSocial, setRazaoSocial] = useState<string>('');
+  const [nomeFantasia, setNomeFantasia] = useState<string>('');
+  const [ie, setIe] = useState<string>('');
+  const [segmento, setSegmento] = useState<string>('');
+  const [qtdFunc, setQtdFunc] = useState<string>('');
+
+  const [cep, setCep] = useState<string>('');
+  const [cepLoading, setCepLoading] = useState<boolean>(false);
+  const [endereco, setEndereco] = useState<string>('');
+  const [numero, setNumero] = useState<string>('');
+  const [cidade, setCidade] = useState<string>('');
+  const [estado, setEstado] = useState<string>('MG');
+
+  const [nomeResponsavel, setNomeResponsavel] = useState<string>('');
+  const [cargo, setCargo] = useState<string>('');
+  const [telefone, setTelefone] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+
+  const [contadorNome, setContadorNome] = useState<string>('');
+  const [contadorEscritorio, setContadorEscritorio] = useState<string>('');
+  const [contadorTelefone, setContadorTelefone] = useState<string>('');
+  const [contadorEmail, setContadorEmail] = useState<string>('');
+
   // Estimation calculation logic
   const calculateEstimation = () => {
     const val = parseFloat(calcIcms) || 0;
-    // Em MG, empresas podem destinar até 3% do saldo devedor do ICMS dependendo da faixa ou edital, 
-    // mas vamos apresentar uma estimativa de potencial anual de destinação a custo zero para encantar.
     const monthlyDestination = val * 0.03; 
     const annualDestination = monthlyDestination * 12;
     return {
@@ -44,6 +68,87 @@ export default function SupportPage() {
 
   const est = calculateEstimation();
 
+  // CNPJ Masking & Auto Fetch
+  const handleCnpjChange = async (val: string) => {
+    const numbers = val.replace(/\D/g, '');
+    let masked = numbers;
+    if (numbers.length > 2) masked = numbers.replace(/^(\d{2})(\d)/, '$1.$2');
+    if (numbers.length > 5) masked = masked.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+    if (numbers.length > 8) masked = masked.replace(/\.(\d{3})(\d)/, '.$1/$2');
+    if (numbers.length > 12) masked = masked.replace(/(\d{4})(\d)/, '$1-$2');
+    
+    masked = masked.substring(0, 18);
+    setCnpj(masked);
+
+    if (numbers.length === 14) {
+      setCnpjLoading(true);
+      try {
+        const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${numbers}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.razao_social) setRazaoSocial(data.razao_social);
+          if (data.nome_fantasia) setNomeFantasia(data.nome_fantasia);
+          if (data.uf) setEstado(data.uf);
+          if (data.municipio) setCidade(data.municipio);
+          if (data.cep) {
+            const cStr = data.cep.replace(/\D/g, '');
+            if (cStr.length === 8) {
+              setCep(`${cStr.substring(0,5)}-${cStr.substring(5)}`);
+            }
+          }
+          if (data.logradouro) {
+            setEndereco(data.logradouro + (data.bairro ? ` - ${data.bairro}` : ''));
+          }
+          if (data.numero && data.numero !== 'S/N') {
+            setNumero(data.numero);
+          }
+        }
+      } catch (err) {
+        console.error('Erro ao buscar CNPJ:', err);
+      } finally {
+        setCnpjLoading(false);
+      }
+    }
+  };
+
+  // CEP Masking & Auto Fetch
+  const handleCepChange = async (val: string) => {
+    const numbers = val.replace(/\D/g, '');
+    let masked = numbers;
+    if (numbers.length > 5) masked = numbers.replace(/^(\d{5})(\d)/, '$1-$2');
+    masked = masked.substring(0, 9);
+    setCep(masked);
+
+    if (numbers.length === 8) {
+      setCepLoading(true);
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${numbers}/json/`);
+        if (res.ok) {
+          const data = await res.json();
+          if (!data.erro) {
+            if (data.logradouro) setEndereco(data.logradouro + (data.bairro ? ` - ${data.bairro}` : ''));
+            if (data.localidade) setCidade(data.localidade);
+            if (data.uf) setEstado(data.uf);
+          }
+        }
+      } catch (err) {
+        console.error('Erro ao buscar CEP:', err);
+      } finally {
+        setCepLoading(false);
+      }
+    }
+  };
+
+  // Phone / WhatsApp Masking
+  const handlePhoneChange = (val: string, setter: React.Dispatch<React.SetStateAction<string>>) => {
+    const numbers = val.replace(/\D/g, '');
+    let masked = numbers;
+    if (numbers.length > 0) masked = `(${numbers}`;
+    if (numbers.length > 2) masked = `(${numbers.substring(0,2)}) ${numbers.substring(2)}`;
+    if (numbers.length > 7) masked = `(${numbers.substring(0,2)}) ${numbers.substring(2,7)}-${numbers.substring(7,11)}`;
+    setter(masked.substring(0, 15));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!authorized) {
@@ -51,31 +156,20 @@ export default function SupportPage() {
       return;
     }
 
-    const form = e.currentTarget;
-    const fd = new FormData(form);
-
-    const razao_social = (fd.get('razao_social') as string) || '';
-    const cnpj = (fd.get('cnpj') as string) || '';
-    const nome_responsavel = (fd.get('nome_responsavel') as string) || '';
-    const cargo = (fd.get('cargo') as string) || '';
-    const telefone = (fd.get('telefone') as string) || '';
-    const email = (fd.get('email') as string) || '';
-
-    // Agrupar observações e metadados no JSON para preservar 100% dos campos
     const observacoesObj = {
-      nome_fantasia: fd.get('nome_fantasia'),
-      ie: fd.get('ie'),
-      segmento: fd.get('segmento'),
-      qtd_func: fd.get('qtd_func'),
-      cep: fd.get('cep'),
-      endereco: fd.get('endereco'),
-      numero: fd.get('numero'),
-      cidade: fd.get('cidade'),
-      estado: fd.get('estado'),
-      contador_nome: fd.get('contador_nome'),
-      contador_escritorio: fd.get('contador_escritorio'),
-      contador_telefone: fd.get('contador_telefone'),
-      contador_email: fd.get('contador_email'),
+      nome_fantasia: nomeFantasia,
+      ie,
+      segmento,
+      qtd_func: qtdFunc,
+      cep,
+      endereco,
+      numero,
+      cidade,
+      estado,
+      contador_nome: contadorNome,
+      contador_escritorio: contadorEscritorio,
+      contador_telefone: contadorTelefone,
+      contador_email: contadorEmail,
       faixa_icms: icmsRange,
       recolhe_icms_mg: recolheIcms,
       interesse_principal: interest,
@@ -84,17 +178,15 @@ export default function SupportPage() {
     };
 
     const observacoes_internas = JSON.stringify(observacoesObj, null, 2);
-
-    // Calcular o potencial para exibição analítica no DB
     const icms_mensal_estimado = parseFloat(calcIcms) || 0;
     const potencial_anual_estimado = icms_mensal_estimado * 0.03 * 12;
 
     try {
       const { error } = await supabase.from('empresas_leads').insert([
         {
-          razao_social,
+          razao_social: razaoSocial,
           cnpj,
-          nome_responsavel,
+          nome_responsavel: nomeResponsavel,
           cargo,
           email,
           telefone,
@@ -113,7 +205,6 @@ export default function SupportPage() {
       }
 
       setSubmitted(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       console.error('Erro de conexão:', err);
       alert('Ocorreu um erro inesperado de conexão.');
@@ -151,31 +242,56 @@ export default function SupportPage() {
         </div>
       </div>
 
+      {/* MODAL DE AGRADECIMENTO PREMIUM */}
       {submitted ? (
-        <div className="max-w-3xl mx-auto px-6 py-24 text-center">
-          <div className="w-20 h-20 bg-black text-[#E4F100] rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl animate-bounce">
-            <CheckCircle2 className="w-10 h-10" />
+        <div className="min-h-[80vh] flex items-center justify-center p-6 animate-fade-in relative overflow-hidden bg-black selection:bg-white selection:text-black">
+          {/* Efeitos de brilho esmeralda e amarelo */}
+          <div className="absolute w-[400px] h-[400px] bg-emerald-500/10 blur-[100px] rounded-full top-10 left-10 pointer-events-none" />
+          <div className="absolute w-[400px] h-[400px] bg-[#E4F100]/5 blur-[100px] rounded-full bottom-10 right-10 pointer-events-none" />
+
+          <div className="bg-neutral-950 border border-neutral-800 text-white p-8 sm:p-10 rounded-3xl max-w-md w-full shadow-2xl text-center space-y-6 relative z-10 animate-scale-up">
+            
+            {/* Escudo da Gameleira em destaque absoluto */}
+            <div className="flex justify-center">
+              <div className="relative">
+                <div className="absolute inset-0 bg-white/5 blur-xl rounded-full animate-pulse pointer-events-none" />
+                <img src="/escudo.png" alt="Gameleira" className="w-20 h-auto drop-shadow-[0_0_25px_rgba(255,255,255,0.2)] relative z-10" />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-500 block">
+                Proposta Recebida
+              </span>
+              <h3 className="text-2xl font-black italic tracking-tight text-white uppercase">
+                Muito Obrigado!
+              </h3>
+              <p className="text-xs text-neutral-300 leading-relaxed pt-1 font-medium">
+                Seus dados corporativos foram registrados com sucesso e já estão em <strong className="text-white">análise preliminar</strong> de viabilidade pelo nosso comitê técnico e jurídico.
+              </p>
+            </div>
+
+            {/* Caixa de Destaque de Contato */}
+            <div className="bg-neutral-900 border border-neutral-800 p-4 rounded-2xl text-left space-y-2.5">
+              <div className="flex items-center gap-2 text-xs font-bold text-white">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" /> 
+                <span>Próximos Passos Importantes</span>
+              </div>
+              <p className="text-[11px] text-neutral-400 leading-snug">
+                Fique totalmente atento ao seu <strong className="text-white">WhatsApp</strong> e ao <strong className="text-white">E-mail</strong> informados. Entraremos em contato com as instruções para o enquadramento do ICMS.
+              </p>
+            </div>
+
+            <div className="pt-2">
+              <a 
+                href="/" 
+                className="block w-full bg-white hover:bg-neutral-200 text-black font-black uppercase text-xs py-3.5 rounded-xl transition-all shadow-lg tracking-wider"
+              >
+                Voltar à Página Inicial
+              </a>
+            </div>
+
           </div>
-          <span className="text-xs uppercase tracking-[0.3em] font-black text-neutral-500 block mb-2">Análise Solicitada</span>
-          <h1 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter text-neutral-900 mb-4">
-            Dados Recebidos com Sucesso
-          </h1>
-          <p className="text-neutral-600 text-base md:text-lg max-w-xl mx-auto mb-8 leading-relaxed font-medium">
-            Nossa equipe jurídica e contábil fará o estudo de viabilidade do redirecionamento do ICMS da sua empresa. Entraremos em contato com o responsável ou contador indicado em até 48 horas úteis.
-          </p>
-          <div className="bg-white border border-neutral-200 p-6 rounded-2xl max-w-md mx-auto shadow-sm text-left mb-8">
-            <h4 className="font-bold text-sm text-neutral-900 mb-2 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" /> Próximos Passos
-            </h4>
-            <ul className="text-xs text-neutral-600 space-y-2">
-              <li>1. Validação de regularidade fiscal em MG.</li>
-              <li>2. Contato com o contador para alinhamento técnico.</li>
-              <li>3. Apresentação do plano de cotas sem impacto no caixa.</li>
-            </ul>
-          </div>
-          <a href="/" className="inline-block bg-black text-white hover:bg-neutral-800 font-bold px-8 py-4 rounded-full text-sm transition-all shadow-md">
-            Voltar para a Página Inicial
-          </a>
         </div>
       ) : (
         <>
@@ -561,28 +677,31 @@ export default function SupportPage() {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
+                      <label className="block text-xs font-bold text-neutral-700 mb-1 flex items-center justify-between">
+                        <span>CNPJ *</span>
+                        {cnpjLoading && <span className="text-[10px] text-emerald-600 font-bold animate-pulse">Buscando BrasilAPI...</span>}
+                      </label>
+                      <input required name="cnpj" value={cnpj} onChange={e => handleCnpjChange(e.target.value)} type="text" placeholder="00.000.000/0000-00" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                    </div>
+                    <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Razão Social *</label>
-                      <input required name="razao_social" type="text" placeholder="Ex: Empresa Exemplo S/A" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="razao_social" value={razaoSocial} onChange={e => setRazaoSocial(e.target.value)} type="text" placeholder="Ex: Empresa Exemplo S/A" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Nome Fantasia *</label>
-                      <input required name="nome_fantasia" type="text" placeholder="Ex: Exemplo" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-neutral-700 mb-1">CNPJ *</label>
-                      <input required name="cnpj" type="text" placeholder="00.000.000/0000-00" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="nome_fantasia" value={nomeFantasia} onChange={e => setNomeFantasia(e.target.value)} type="text" placeholder="Ex: Exemplo" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Inscrição Estadual *</label>
-                      <input required name="ie" type="text" placeholder="Número da IE" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="ie" value={ie} onChange={e => setIe(e.target.value)} type="text" placeholder="Número da IE" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Segmento da Empresa</label>
-                      <input name="segmento" type="text" placeholder="Ex: Indústria, Comércio, Varejo" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input name="segmento" value={segmento} onChange={e => setSegmento(e.target.value)} type="text" placeholder="Ex: Indústria, Comércio, Varejo" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Quantidade de Funcionários</label>
-                      <input name="qtd_func" type="text" placeholder="Ex: 50 a 200" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input name="qtd_func" value={qtdFunc} onChange={e => setQtdFunc(e.target.value)} type="text" placeholder="Ex: 50 a 200" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                   </div>
                 </div>
@@ -595,24 +714,27 @@ export default function SupportPage() {
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-neutral-700 mb-1">CEP *</label>
-                      <input required name="cep" type="text" placeholder="00000-000" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <label className="block text-xs font-bold text-neutral-700 mb-1 flex items-center justify-between">
+                        <span>CEP *</span>
+                        {cepLoading && <span className="text-[10px] text-emerald-600 font-bold animate-pulse">Buscando ViaCEP...</span>}
+                      </label>
+                      <input required name="cep" value={cep} onChange={e => handleCepChange(e.target.value)} type="text" placeholder="00000-000" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div className="md:col-span-2">
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Endereço *</label>
-                      <input required name="endereco" type="text" placeholder="Rua, Avenida" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="endereco" value={endereco} onChange={e => setEndereco(e.target.value)} type="text" placeholder="Rua, Avenida, Bairro" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Número *</label>
-                      <input required name="numero" type="text" placeholder="Número" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="numero" value={numero} onChange={e => setNumero(e.target.value)} type="text" placeholder="Número" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Cidade *</label>
-                      <input required name="cidade" type="text" placeholder="Cidade" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="cidade" value={cidade} onChange={e => setCidade(e.target.value)} type="text" placeholder="Cidade" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Estado *</label>
-                      <input required name="estado" type="text" placeholder="MG" defaultValue="MG" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="estado" value={estado} onChange={e => setEstado(e.target.value.toUpperCase())} type="text" placeholder="MG" maxLength={2} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                   </div>
                 </div>
@@ -626,19 +748,19 @@ export default function SupportPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Nome do Responsável *</label>
-                      <input required name="nome_responsavel" type="text" placeholder="Nome completo" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="nome_responsavel" value={nomeResponsavel} onChange={e => setNomeResponsavel(e.target.value)} type="text" placeholder="Nome completo" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Cargo *</label>
-                      <input required name="cargo" type="text" placeholder="Ex: Diretor, Gerente, Proprietário" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="cargo" value={cargo} onChange={e => setCargo(e.target.value)} type="text" placeholder="Ex: Diretor, Gerente, Proprietário" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">WhatsApp *</label>
-                      <input required name="telefone" type="tel" placeholder="(00) 90000-0000" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="telefone" value={telefone} onChange={e => handlePhoneChange(e.target.value, setTelefone)} type="tel" placeholder="(00) 90000-0000" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">E-mail Corporativo *</label>
-                      <input required name="email" type="email" placeholder="nome@empresa.com.br" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
+                      <input required name="email" value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder="nome@empresa.com.br" className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-sm font-medium focus:outline-none focus:border-black focus:bg-white transition-colors" />
                     </div>
                   </div>
                 </div>
@@ -659,19 +781,19 @@ export default function SupportPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Nome do Contador</label>
-                      <input name="contador_nome" type="text" placeholder="Nome completo" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
+                      <input name="contador_nome" value={contadorNome} onChange={e => setContadorNome(e.target.value)} type="text" placeholder="Nome completo" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">Escritório Contábil</label>
-                      <input name="contador_escritorio" type="text" placeholder="Nome do escritório" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
+                      <input name="contador_escritorio" value={contadorEscritorio} onChange={e => setContadorEscritorio(e.target.value)} type="text" placeholder="Nome do escritório" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">WhatsApp do Contador</label>
-                      <input name="contador_telefone" type="tel" placeholder="(00) 90000-0000" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
+                      <input name="contador_telefone" value={contadorTelefone} onChange={e => handlePhoneChange(e.target.value, setContadorTelefone)} type="tel" placeholder="(00) 90000-0000" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-neutral-700 mb-1">E-mail do Contador</label>
-                      <input name="contador_email" type="email" placeholder="contador@escritorio.com.br" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
+                      <input name="contador_email" value={contadorEmail} onChange={e => setContadorEmail(e.target.value)} type="email" placeholder="contador@escritorio.com.br" className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-2 text-sm font-medium focus:outline-none focus:border-black transition-colors" />
                     </div>
                   </div>
                 </div>
