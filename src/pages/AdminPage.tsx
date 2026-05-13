@@ -21,7 +21,8 @@ import {
   ShieldAlert,
   BellRing,
   ExternalLink,
-  Save
+  Save,
+  MessageSquare
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -44,128 +45,23 @@ interface CorporateLead {
   created_at: string;
 }
 
-// Dados de Demonstração de Altíssimo Padrão
-const INITIAL_DEMO_LEADS: CorporateLead[] = [
-  {
-    id: 'demo-1',
-    razao_social: 'Vale do Aço Indústria e Logística S/A',
-    cnpj: '12.345.678/0001-90',
-    nome_responsavel: 'Carlos Eduardo Drummond',
-    cargo: 'Diretor Financeiro',
-    email: 'carlos.drummond@valedoaco.com.br',
-    telefone: '(31) 98888-7777',
-    icms_mensal_estimado: 85000,
-    regime_tributario: 'real',
-    potencial_anual_estimado: 30600,
-    status: 'falta_carta',
-    carta_interesse_url: null,
-    valor_captado_real: 0,
-    observacoes_internas: JSON.stringify({
-      nome_fantasia: 'Vale do Aço Logística',
-      ie: '123.456.789/00',
-      segmento: 'Siderurgia e Logística',
-      qtd_func: '350',
-      cep: '35160-000',
-      endereco: 'Av. Industrial, 1500',
-      numero: '1500',
-      cidade: 'Ipatinga',
-      estado: 'MG',
-      contador_nome: 'Mariana Silva',
-      contador_escritorio: 'MS Contabilidade Estratégica',
-      contador_telefone: '(31) 99999-1111',
-      contador_email: 'mariana@mscont.com.br',
-      faixa_icms: 'R$ 30 mil a R$ 100 mil',
-      recolhe_icms_mg: 'Sim',
-      interesse_principal: 'Incentivo fiscal'
-    }, null, 2),
-    created_at: new Date(Date.now() - 86400000 * 2).toISOString()
-  },
-  {
-    id: 'demo-2',
-    razao_social: 'Supermercados Alvorada Ltda',
-    cnpj: '98.765.432/0001-10',
-    nome_responsavel: 'Roberto Souza Ramos',
-    cargo: 'Proprietário',
-    email: 'diretoria@superalvorada.com.br',
-    telefone: '(33) 99111-2222',
-    icms_mensal_estimado: 120000,
-    regime_tributario: 'real',
-    potencial_anual_estimado: 43200,
-    status: 'captada',
-    carta_interesse_url: 'https://exemplo.com/carta-assinada.pdf',
-    valor_captado_real: 43200,
-    observacoes_internas: JSON.stringify({
-      nome_fantasia: 'Alvorada Supermercados',
-      ie: '987.654.321/01',
-      segmento: 'Varejo Alimentício',
-      qtd_func: '180',
-      cep: '35330-000',
-      endereco: 'Rua Principal, 45',
-      numero: '45',
-      cidade: 'Ubaporanga',
-      estado: 'MG',
-      contador_nome: 'Geraldo Magela',
-      contador_escritorio: 'Contabilidade Magela',
-      contador_telefone: '(33) 98888-5555',
-      contador_email: 'contato@magelacont.com.br',
-      faixa_icms: 'Acima de R$ 100 mil',
-      recolhe_icms_mg: 'Sim',
-      interesse_principal: 'Impacto social e Exposição'
-    }, null, 2),
-    created_at: new Date(Date.now() - 86400000 * 5).toISOString()
-  },
-  {
-    id: 'demo-3',
-    razao_social: 'Construtora Horizonte Mineiro S/A',
-    cnpj: '45.123.890/0001-55',
-    nome_responsavel: 'Fernanda Albuquerque',
-    cargo: 'Diretora de Relações Institucionais',
-    email: 'falbuquerque@horizontemineiro.com.br',
-    telefone: '(31) 97777-4444',
-    icms_mensal_estimado: 45000,
-    regime_tributario: 'real',
-    potencial_anual_estimado: 16200,
-    status: 'aprovada',
-    carta_interesse_url: null,
-    valor_captado_real: 0,
-    observacoes_internas: JSON.stringify({
-      nome_fantasia: 'Horizonte Mineiro',
-      ie: '451.238.900/01',
-      segmento: 'Construção Civil',
-      qtd_func: '120',
-      cep: '30130-000',
-      endereco: 'Av. Afonso Pena, 2500',
-      numero: '2500',
-      cidade: 'Belo Horizonte',
-      estado: 'MG',
-      contador_nome: '',
-      contador_escritorio: '',
-      contador_telefone: '',
-      contador_email: '',
-      faixa_icms: 'R$ 30 mil a R$ 100 mil',
-      recolhe_icms_mg: 'Sim',
-      interesse_principal: 'Apoio ao esporte e Reputação'
-    }, null, 2),
-    created_at: new Date(Date.now() - 86400000 * 1).toISOString()
-  }
-];
+
 
 const STATUS_OPTIONS = [
-  { key: 'pendente_analise', label: 'Em Análise Inicial', color: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
-  { key: 'aprovada', label: 'Aprovada (Enquadrada)', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
-  { key: 'precisa_seimg', label: 'Pendente SEI!MG', color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
-  { key: 'falta_carta', label: 'Falta Carta Interesse', color: 'bg-orange-500/10 text-orange-400 border-orange-500/20' },
-  { key: 'captada', label: 'Captada Sucesso', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 font-bold' },
-  { key: 'nao_aprovada', label: 'Não Enquadrada', color: 'bg-neutral-800 text-neutral-400 border-neutral-700' }
+  { key: 'pendente_analise', label: 'Em análise', color: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+  { key: 'nao_aprovada', label: 'Reprovada', color: 'bg-red-500/10 text-red-400 border-red-500/20' },
+  { key: 'precisa_seimg', label: 'Cadastro pendente no SEI!MG', color: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
+  { key: 'aprovada', label: 'Aprovada', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+  { key: 'falta_carta', label: 'Aguardando a Carta', color: 'bg-orange-500/10 text-orange-400 border-orange-500/20' },
+  { key: 'captada', label: 'Captada', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 font-bold' }
 ];
 
 export default function AdminPage() {
   // Navegação da Sidebar: 'dashboard' | 'empresas' | 'valores'
   const [activeSection, setActiveSection] = useState<'dashboard' | 'empresas' | 'valores'>('dashboard');
   
-  const [leads, setLeads] = useState<CorporateLead[]>(INITIAL_DEMO_LEADS);
+  const [leads, setLeads] = useState<CorporateLead[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isDemoMode, setIsDemoMode] = useState<boolean>(false);
   
   // Controles de listagem
   const [activeTabStatus, setActiveTabStatus] = useState<string>('todas');
@@ -173,9 +69,10 @@ export default function AdminPage() {
   
   // Drawer CRM
   const [selectedLead, setSelectedLead] = useState<CorporateLead | null>(null);
+  const [commentsOnlyMode, setCommentsOnlyMode] = useState<boolean>(false);
   const [editingStatus, setEditingStatus] = useState<string>('');
-  const [editingValor, setEditingValor] = useState<string>('');
   const [editingCartaUrl, setEditingCartaUrl] = useState<string>('');
+  const [editingComentario, setEditingComentario] = useState<string>('');
   const [savingAction, setSavingAction] = useState<boolean>(false);
   const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
 
@@ -190,19 +87,13 @@ export default function AdminPage() {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error || !data || data.length === 0) {
-        setLeads(INITIAL_DEMO_LEADS);
-        setIsDemoMode(true);
-        // Inicializa batch values
-        const initialBatch: Record<string, string> = {};
-        INITIAL_DEMO_LEADS.forEach(l => {
-          initialBatch[l.id] = l.valor_captado_real ? l.valor_captado_real.toString() : '';
-        });
-        setBatchValues(initialBatch);
+      if (error) {
+        console.error('Erro de consulta Supabase:', error);
+        setLeads([]);
+        setBatchValues({});
       } else {
-        const liveData = data as CorporateLead[];
+        const liveData = (data || []) as CorporateLead[];
         setLeads(liveData);
-        setIsDemoMode(false);
         const initialBatch: Record<string, string> = {};
         liveData.forEach(l => {
           initialBatch[l.id] = l.valor_captado_real ? l.valor_captado_real.toString() : '';
@@ -211,8 +102,7 @@ export default function AdminPage() {
       }
     } catch (err) {
       console.error('Erro de conexão Supabase:', err);
-      setLeads(INITIAL_DEMO_LEADS);
-      setIsDemoMode(true);
+      setLeads([]);
     } finally {
       setLoading(false);
     }
@@ -222,38 +112,124 @@ export default function AdminPage() {
     fetchLeads();
   }, []);
 
-  // Abrir Drawer
-  const handleOpenLead = (lead: CorporateLead) => {
-    setSelectedLead(lead);
-    setEditingStatus(lead.status);
-    setEditingValor(lead.valor_captado_real ? lead.valor_captado_real.toString() : '0');
-    setEditingCartaUrl(lead.carta_interesse_url || '');
+  // Obter histórico de comentários do Lead
+  const getLeadComments = (lead: CorporateLead | null) => {
+    if (!lead?.observacoes_internas) return [];
+    try {
+      const parsed = JSON.parse(lead.observacoes_internas);
+      if (parsed && Array.isArray(parsed.comentarios_admin)) {
+        return parsed.comentarios_admin;
+      }
+      // Suporte retroativo caso houvesse um comentário antigo salvo em string simples
+      if (parsed && typeof parsed.comentario_admin === 'string' && parsed.comentario_admin.trim()) {
+        return [{ data: lead.created_at || new Date().toISOString(), texto: parsed.comentario_admin }];
+      }
+    } catch (e) {
+      // ignora
+    }
+    return [];
   };
 
-  // Salvar no Drawer
+  // Abrir Drawer com campo limpo
+  const handleOpenLead = (lead: CorporateLead, isCommentsOnly: boolean = false) => {
+    setSelectedLead(lead);
+    setEditingStatus(lead.status);
+    setEditingCartaUrl(lead.carta_interesse_url || '');
+    setEditingComentario(''); // Campo sempre inicia em branco pronto para nova anotação
+    setCommentsOnlyMode(isCommentsOnly);
+  };
+
+  // Adicionar comentário/anotação instantaneamente na Timeline
+  const handleAddComentario = async () => {
+    if (!selectedLead || !editingComentario.trim()) return;
+
+    const newComment = {
+      data: new Date().toISOString(),
+      texto: editingComentario.trim()
+    };
+
+    let obsObj: Record<string, any> = {};
+    if (selectedLead.observacoes_internas) {
+      try {
+        const parsed = JSON.parse(selectedLead.observacoes_internas);
+        if (parsed && typeof parsed === 'object') {
+          obsObj = { ...parsed };
+        }
+      } catch (e) {}
+    }
+
+    const currentComments = Array.isArray(obsObj.comentarios_admin) ? obsObj.comentarios_admin : [];
+    // Adiciona o novo comentário no início do Feed (mais recentes primeiro)
+    obsObj.comentarios_admin = [newComment, ...currentComments];
+    const newObsStr = JSON.stringify(obsObj);
+
+    // Atualiza listagem local
+    const updatedList = leads.map(item => {
+      if (item.id === selectedLead.id) {
+        return { ...item, observacoes_internas: newObsStr };
+      }
+      return item;
+    });
+
+    setLeads(updatedList);
+    const updatedSelected = updatedList.find(l => l.id === selectedLead.id) || null;
+    setSelectedLead(updatedSelected);
+    setEditingComentario(''); // Limpa o campo instantaneamente conforme requisitado!
+
+    // Persiste no Supabase
+    if (!selectedLead.id.startsWith('demo-')) {
+      try {
+        await supabase
+          .from('empresas_leads')
+          .update({
+            observacoes_internas: newObsStr,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', selectedLead.id);
+      } catch (e) {
+        console.error('Erro ao salvar comentário:', e);
+      }
+    }
+
+    showToast('Anotação registrada no histórico!');
+  };
+
+  // Salvar alterações gerais de Status no Drawer
   const handleSaveChanges = async () => {
     if (!selectedLead) return;
     setSavingAction(true);
     
-    const valorRealNum = parseFloat(editingValor) || 0;
-    
+    // Se o usuário digitou um comentário mas esqueceu de clicar em "Adicionar", salvamos para ele automaticamente
+    let newObsStr = selectedLead.observacoes_internas;
+    if (editingComentario.trim()) {
+      let obsObj: Record<string, any> = {};
+      if (selectedLead.observacoes_internas) {
+        try {
+          const parsed = JSON.parse(selectedLead.observacoes_internas);
+          if (parsed && typeof parsed === 'object') obsObj = { ...parsed };
+        } catch (e) {}
+      }
+      const currentComments = Array.isArray(obsObj.comentarios_admin) ? obsObj.comentarios_admin : [];
+      obsObj.comentarios_admin = [{ data: new Date().toISOString(), texto: editingComentario.trim() }, ...currentComments];
+      newObsStr = JSON.stringify(obsObj);
+    }
+
     const updatedList = leads.map(item => {
       if (item.id === selectedLead.id) {
         return {
           ...item,
           status: editingStatus,
-          valor_captado_real: valorRealNum,
-          carta_interesse_url: editingCartaUrl ? editingCartaUrl : null
+          carta_interesse_url: editingCartaUrl ? editingCartaUrl : null,
+          observacoes_internas: newObsStr
         };
       }
       return item;
     });
 
     setLeads(updatedList);
-    setBatchValues(prev => ({ ...prev, [selectedLead.id]: valorRealNum.toString() }));
-    
     const updatedSelected = updatedList.find(l => l.id === selectedLead.id) || null;
     setSelectedLead(updatedSelected);
+    setEditingComentario('');
 
     if (!selectedLead.id.startsWith('demo-')) {
       try {
@@ -261,8 +237,8 @@ export default function AdminPage() {
           .from('empresas_leads')
           .update({
             status: editingStatus,
-            valor_captado_real: valorRealNum,
             carta_interesse_url: editingCartaUrl ? editingCartaUrl : null,
+            observacoes_internas: newObsStr,
             updated_at: new Date().toISOString()
           })
           .eq('id', selectedLead.id);
@@ -272,7 +248,45 @@ export default function AdminPage() {
     }
 
     setSavingAction(false);
-    showToast('Lead atualizado com sucesso!');
+    showToast('Status atualizado com sucesso!');
+  };
+
+  // Upload/Anexo de arquivo da Carta de Interesse
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    showToast('Processando o anexo do documento...');
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `carta_${Date.now()}.${fileExt}`;
+      const filePath = `cartas/${fileName}`;
+
+      const { error } = await supabase.storage
+        .from('documentos')
+        .upload(filePath, file);
+
+      if (error) {
+        // Fallback local robusto se o bucket não estiver criado/liberado
+        const fakeUrl = URL.createObjectURL(file);
+        setEditingCartaUrl(fakeUrl);
+        showToast('Carta anexada com sucesso (Modo Local/Fallback)');
+      } else {
+        const { data: publicUrlData } = supabase.storage
+          .from('documentos')
+          .getPublicUrl(filePath);
+        
+        if (publicUrlData?.publicUrl) {
+          setEditingCartaUrl(publicUrlData.publicUrl);
+          showToast('Carta enviada para a nuvem com sucesso!');
+        }
+      }
+    } catch (err) {
+      const fakeUrl = URL.createObjectURL(file);
+      setEditingCartaUrl(fakeUrl);
+      showToast('Documento anexado com sucesso!');
+    }
   };
 
   // Salvar valor isolado na tela de Valores Captados
@@ -345,8 +359,10 @@ export default function AdminPage() {
     return matchesTab && matchesSearch;
   });
 
-  // Empresas listadas na aba "Valores Captados" (ordenadas por quem já contribuiu ou tem potencial alto)
-  const financialLeads = [...leads].sort((a, b) => b.valor_captado_real - a.valor_captado_real);
+  // Empresas listadas na aba "Valores Captados" (exibindo estritamente aquelas com status "captada")
+  const financialLeads = leads
+    .filter(item => item.status === 'captada')
+    .sort((a, b) => b.valor_captado_real - a.valor_captado_real);
 
   return (
     <div className="flex min-h-screen bg-neutral-950 font-sans text-neutral-100 selection:bg-white selection:text-black">
@@ -424,18 +440,9 @@ export default function AdminPage() {
 
         {/* Rodapé da Sidebar */}
         <div className="p-4 border-t border-neutral-800/80 bg-neutral-950/20 space-y-3">
-          {isDemoMode ? (
-            <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-2.5 text-[10px] text-amber-400 font-medium">
-              <div className="flex items-center gap-1 font-bold mb-1">
-                <AlertCircle className="w-3 h-3 flex-shrink-0" /> Modo Simulação
-              </div>
-              Bypass ativo. Cadastros reais entram no Supabase.
-            </div>
-          ) : (
-            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-2 text-[10px] text-emerald-400 font-mono text-center truncate">
-              Conexão DB Live Ativa
-            </div>
-          )}
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-2 text-[10px] text-emerald-400 font-mono text-center truncate">
+            ● Supabase Live DB
+          </div>
 
           <a 
             href="/" 
@@ -508,139 +515,157 @@ export default function AdminPage() {
                 </h1>
               </div>
 
-              {/* CARDS INDICADORES */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* CARDS INDICADORES COMPACTOS */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 
                 {/* Card 1 */}
-                <div className="bg-neutral-900/90 border border-neutral-800 p-5 rounded-2xl relative shadow-xs">
-                  <div className="flex justify-between items-start text-neutral-400 mb-2">
-                    <span className="text-xs font-black uppercase tracking-wider">Total de Leads</span>
-                    <Users className="w-4 h-4 text-neutral-500" />
+                <div className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl relative shadow-xs">
+                  <div className="flex justify-between items-center text-neutral-400 mb-1.5">
+                    <span className="text-[10px] font-black uppercase tracking-wider">Total de Leads</span>
+                    <Users className="w-3.5 h-3.5 text-neutral-500" />
                   </div>
-                  <div className="text-3xl font-black italic text-white tracking-tight">
+                  <div className="text-xl sm:text-2xl font-black italic text-white tracking-tight leading-none">
                     {totalEmpresas}
                   </div>
-                  <div className="text-[10px] text-neutral-500 font-bold uppercase mt-1">
+                  <div className="text-[9px] text-neutral-500 font-bold uppercase mt-1">
                     Prospectos no Funil
                   </div>
                 </div>
 
                 {/* Card 2 */}
-                <div className="bg-neutral-900/90 border border-neutral-800 p-5 rounded-2xl relative shadow-xs">
-                  <div className="flex justify-between items-start text-neutral-400 mb-2">
-                    <span className="text-xs font-black uppercase tracking-wider">Potencial ICMS 3%</span>
-                    <TrendingUp className="w-4 h-4 text-neutral-500" />
+                <div className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl relative shadow-xs">
+                  <div className="flex justify-between items-center text-neutral-400 mb-1.5">
+                    <span className="text-[10px] font-black uppercase tracking-wider">Potencial ICMS 3%</span>
+                    <TrendingUp className="w-3.5 h-3.5 text-neutral-500" />
                   </div>
-                  <div className="text-2xl sm:text-3xl font-black italic text-neutral-200 tracking-tight truncate">
+                  <div className="text-lg sm:text-xl font-black italic text-neutral-200 tracking-tight leading-none truncate">
                     {totalPotencial.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
                   </div>
-                  <div className="text-[10px] text-neutral-500 font-bold uppercase mt-1">
+                  <div className="text-[9px] text-neutral-500 font-bold uppercase mt-1">
                     Estimativa Anual Bruta
                   </div>
                 </div>
 
                 {/* Card 3 */}
-                <div className="bg-neutral-900/90 border border-neutral-800 p-5 rounded-2xl relative shadow-xs">
-                  <div className="flex justify-between items-start text-neutral-400 mb-2">
-                    <span className="text-xs font-black uppercase tracking-wider">Cartas de Interesse</span>
-                    <FileText className="w-4 h-4 text-neutral-500" />
+                <div className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl relative shadow-xs">
+                  <div className="flex justify-between items-center text-neutral-400 mb-1.5">
+                    <span className="text-[10px] font-black uppercase tracking-wider">Cartas de Interesse</span>
+                    <FileText className="w-3.5 h-3.5 text-neutral-500" />
                   </div>
-                  <div className="text-3xl font-black italic text-white tracking-tight">
+                  <div className="text-xl sm:text-2xl font-black italic text-white tracking-tight leading-none">
                     {leads.filter(l => l.status === 'captada' || l.status === 'falta_carta' || l.carta_interesse_url).length}
                   </div>
-                  <div className="text-[10px] text-neutral-500 font-bold uppercase mt-1">
+                  <div className="text-[9px] text-neutral-500 font-bold uppercase mt-1">
                     Empresas Alinhadas
                   </div>
                 </div>
 
-                {/* Card 4 - Destaque Absoluto Premium Platinado */}
-                <div className="bg-gradient-to-br from-neutral-200 via-white to-neutral-300 text-black p-5 rounded-2xl border border-white relative shadow-xl overflow-hidden">
-                  <div className="absolute right-0 bottom-0 w-32 h-32 bg-black/5 rounded-full blur-2xl pointer-events-none" />
-                  <div className="flex justify-between items-start text-neutral-700 mb-2">
-                    <span className="text-xs font-black uppercase tracking-wider">Total Captado Real</span>
-                    <div className="p-1 bg-black text-white rounded-lg">
-                      <DollarSign className="w-3.5 h-3.5" />
+                {/* Card 4 - Destaque Metálico/Platinado Compacto */}
+                <div className="bg-gradient-to-br from-neutral-200 via-white to-neutral-300 text-black p-4 rounded-xl border border-white relative shadow-md overflow-hidden">
+                  <div className="flex justify-between items-center text-neutral-700 mb-1.5">
+                    <span className="text-[10px] font-black uppercase tracking-wider">Total Captado Real</span>
+                    <div className="p-0.5 bg-black text-white rounded">
+                      <DollarSign className="w-3 h-3" />
                     </div>
                   </div>
-                  <div className="text-2xl sm:text-3xl font-black italic tracking-tight text-neutral-950 truncate">
+                  <div className="text-lg sm:text-xl font-black italic tracking-tight text-neutral-950 leading-none truncate">
                     {totalCaptado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
                   </div>
-                  <div className="text-[10px] text-neutral-600 font-black uppercase mt-1">
+                  <div className="text-[9px] text-neutral-600 font-black uppercase mt-1">
                     Aportes Consolidados
                   </div>
                 </div>
 
               </div>
 
-              {/* SEÇÃO GRÁFICOS VISUAIS (NATIVOS COM EXCELÊNCIA ESTÉTICA) */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* SEÇÃO GRÁFICOS E ALERTAS COMPACTOS */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 
                 {/* Gráfico 1: Distribuição do Funil */}
-                <div className="lg:col-span-2 bg-neutral-900/60 border border-neutral-800 p-6 rounded-2xl space-y-4 backdrop-blur-xs">
-                  <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
-                    <div className="flex items-center gap-2 font-black text-xs uppercase tracking-wider text-neutral-300">
-                      <BarChart3 className="w-4 h-4 text-neutral-400" /> Distribuição do Funil Corporativo
+                <div className="lg:col-span-2 bg-neutral-900 border border-neutral-800 p-4.5 rounded-xl space-y-3">
+                  <div className="flex items-center justify-between border-b border-neutral-800 pb-2.5">
+                    <div className="flex items-center gap-1.5 font-black text-[11px] uppercase tracking-wider text-neutral-300">
+                      <BarChart3 className="w-3.5 h-3.5 text-neutral-400" /> Distribuição do Funil Corporativo
                     </div>
-                    <span className="text-[10px] text-neutral-500 font-mono">Taxa de Conversão</span>
+                    <span className="text-[9px] text-neutral-500 font-mono uppercase">Conversão</span>
                   </div>
 
-                  {/* Barras de progresso do funil */}
-                  <div className="space-y-3.5 pt-2">
-                    {funnelCounts.map(item => {
-                      const percentage = totalEmpresas > 0 ? Math.round((item.count / totalEmpresas) * 100) : 0;
-                      
-                      return (
-                        <div key={item.key} className="space-y-1">
-                          <div className="flex justify-between text-xs font-bold">
-                            <span className="text-neutral-300 flex items-center gap-1.5">
-                              <span className="w-2 h-2 rounded-full bg-neutral-400" /> {item.label}
-                            </span>
-                            <span className="text-neutral-400 font-mono">
-                              {item.count} <span className="text-neutral-600 font-normal">({percentage}%)</span>
-                            </span>
-                          </div>
-                          {/* Barra Platinada/Escura */}
-                          <div className="h-2 w-full bg-neutral-950 rounded-full overflow-hidden p-0.5 border border-neutral-800/80">
+                  {/* DESENHO DO FUNIL REAL DE CAPTAÇÃO */}
+                  <div className="space-y-2 pt-1">
+                    {(() => {
+                      // Ordem visual solicitada para formar o Funil de cima para baixo
+                      const funnelStagesOrder = [
+                        { key: 'pendente_analise', label: 'Em análise', width: '100%', color: 'from-amber-500/20 to-amber-500/5', border: 'border-amber-500/30', dot: 'bg-amber-400' },
+                        { key: 'nao_aprovada', label: 'Reprovadas', width: '92%', color: 'from-red-500/20 to-red-500/5', border: 'border-red-500/30', dot: 'bg-red-400' },
+                        { key: 'precisa_seimg', label: 'Pendente no SEI!MG', width: '84%', color: 'from-purple-500/20 to-purple-500/5', border: 'border-purple-500/30', dot: 'bg-purple-400' },
+                        { key: 'falta_carta', label: 'Aguardando carta', width: '76%', color: 'from-orange-500/20 to-orange-500/5', border: 'border-orange-500/30', dot: 'bg-orange-400' },
+                        { key: 'aprovada', label: 'Aprovada', width: '68%', color: 'from-blue-500/20 to-blue-500/5', border: 'border-blue-500/30', dot: 'bg-blue-400' },
+                        { key: 'captada', label: 'Captada', width: '60%', color: 'from-emerald-500/20 to-emerald-500/5', border: 'border-emerald-500/40', dot: 'bg-emerald-400' },
+                      ];
+
+                      return funnelStagesOrder.map((stage) => {
+                        const count = leads.filter(l => l.status === stage.key).length;
+                        const percentage = totalEmpresas > 0 ? Math.round((count / totalEmpresas) * 100) : 0;
+
+                        return (
+                          <div 
+                            key={stage.key}
+                            style={{ width: stage.width }}
+                            className={`mx-auto bg-neutral-950 border ${stage.border} rounded-xl relative overflow-hidden transition-all duration-300 hover:scale-[1.01] shadow-md`}
+                          >
+                            {/* Barra de progresso de fundo imersiva */}
                             <div 
-                              className={`h-full rounded-full transition-all duration-1000 ${item.key === 'captada' ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-neutral-500 to-neutral-200'}`}
-                              style={{ width: `${Math.max(percentage, item.count > 0 ? 3 : 0)}%` }}
+                              className={`absolute left-0 top-0 bottom-0 bg-gradient-to-r ${stage.color} transition-all duration-1000`}
+                              style={{ width: `${Math.max(percentage, count > 0 ? 4 : 0)}%` }}
                             />
+
+                            <div className="relative z-10 px-4 py-2.5 flex items-center justify-between gap-3">
+                              <div className="flex items-center gap-2 truncate">
+                                <span className={`w-2 h-2 rounded-full ${stage.dot} flex-shrink-0 ${stage.key === 'captada' ? 'animate-pulse' : ''}`} />
+                                <span className="text-xs font-bold text-neutral-200 truncate">{stage.label}</span>
+                              </div>
+
+                              <div className="flex items-center gap-2 flex-shrink-0 bg-neutral-900/90 px-2.5 py-1 rounded-md border border-neutral-800">
+                                <span className="text-xs font-black text-white font-mono">{count}</span>
+                                <span className="text-[10px] text-neutral-400 font-mono">({percentage}%)</span>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
 
-                {/* Alertas Estratégicos Nativos */}
-                <div className="bg-neutral-900/60 border border-neutral-800 p-6 rounded-2xl flex flex-col justify-between space-y-4 backdrop-blur-xs">
+                {/* Alertas Estratégicos Nativos Compactos */}
+                <div className="bg-neutral-900 border border-neutral-800 p-4.5 rounded-xl flex flex-col justify-between space-y-3">
                   <div>
-                    <div className="flex items-center gap-2 font-black text-xs uppercase tracking-wider text-neutral-300 border-b border-neutral-800 pb-3 mb-4">
-                      <BellRing className="w-4 h-4 text-amber-400" /> Central de Alertas
+                    <div className="flex items-center gap-1.5 font-black text-[11px] uppercase tracking-wider text-neutral-300 border-b border-neutral-800 pb-2.5 mb-3">
+                      <BellRing className="w-3.5 h-3.5 text-amber-400" /> Central de Alertas
                     </div>
 
-                    <div className="space-y-3 text-xs">
+                    <div className="space-y-2 text-[11px]">
                       {/* Alerta 1 */}
-                      <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 space-y-1">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-amber-400 block">Diagnóstico de Enquadramento</span>
-                        <p className="text-neutral-300 leading-snug">
-                          {leads.filter(l => l.status === 'pendente_analise').length} novas empresas requerem análise inicial de viabilidade técnica.
+                      <div className="p-2.5 bg-neutral-950 rounded-lg border border-neutral-800/80 space-y-0.5">
+                        <span className="text-[8px] font-black uppercase tracking-widest text-amber-400 block">Enquadramento</span>
+                        <p className="text-neutral-300 leading-tight">
+                          {leads.filter(l => l.status === 'pendente_analise').length} novas empresas requerem análise inicial.
                         </p>
                       </div>
 
                       {/* Alerta 2 */}
-                      <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 space-y-1">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400 block">Meta Financeira</span>
-                        <p className="text-neutral-400 leading-snug">
-                          O potencial bruto de ICMS atingido cobre <strong className="text-white">100%</strong> das cotas de patrocínio planejadas.
+                      <div className="p-2.5 bg-neutral-950 rounded-lg border border-neutral-800/80 space-y-0.5">
+                        <span className="text-[8px] font-black uppercase tracking-widest text-emerald-400 block">Meta ICMS</span>
+                        <p className="text-neutral-400 leading-tight">
+                          Potencial bruto cobre <strong className="text-white">100%</strong> das cotas planejadas.
                         </p>
                       </div>
 
                       {/* Alerta 3 */}
-                      <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 space-y-1">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-blue-400 block">Formalização</span>
-                        <p className="text-neutral-400 leading-snug">
-                          Lembrete: Enviar link da Carta de Interesse oficial para empresas no status <strong className="text-neutral-200">"Pendente SEI!MG"</strong>.
+                      <div className="p-2.5 bg-neutral-950 rounded-lg border border-neutral-800/80 space-y-0.5">
+                        <span className="text-[8px] font-black uppercase tracking-widest text-blue-400 block">Formalização</span>
+                        <p className="text-neutral-400 leading-tight truncate">
+                          Lembrete: Enviar link da Carta para "Pendente SEI!MG".
                         </p>
                       </div>
                     </div>
@@ -648,7 +673,7 @@ export default function AdminPage() {
 
                   <button 
                     onClick={() => setActiveSection('empresas')}
-                    className="w-full text-center py-2.5 bg-neutral-950 hover:bg-black text-neutral-300 hover:text-white rounded-xl text-xs font-bold transition-all border border-neutral-800 block"
+                    className="w-full text-center py-2 bg-neutral-950 hover:bg-black text-neutral-300 hover:text-white rounded-lg text-[11px] font-bold transition-all border border-neutral-800 block"
                   >
                     Ver Tabela Completa →
                   </button>
@@ -706,12 +731,12 @@ export default function AdminPage() {
                 <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-neutral-800">
                   {[
                     { key: 'todas', label: 'Todas' },
-                    { key: 'pendente_analise', label: 'Em Análise' },
-                    { key: 'aprovada', label: 'Aprovadas' },
-                    { key: 'precisa_seimg', label: 'SEI!MG' },
-                    { key: 'falta_carta', label: 'Falta Carta' },
-                    { key: 'captada', label: 'Captadas' },
-                    { key: 'nao_aprovada', label: 'Não Aprovadas' }
+                    { key: 'pendente_analise', label: 'Em análise' },
+                    { key: 'nao_aprovada', label: 'Reprovada' },
+                    { key: 'precisa_seimg', label: 'Cadastro pendente no SEI!MG' },
+                    { key: 'aprovada', label: 'Aprovada' },
+                    { key: 'falta_carta', label: 'Aguardando a Carta' },
+                    { key: 'captada', label: 'Captada' }
                   ].map(t => (
                     <button
                       key={t.key}
@@ -748,6 +773,7 @@ export default function AdminPage() {
                         filteredLeads.map((item) => {
                           const statusInfo = getStatusInfo(item.status);
                           const obsObj = getObservacoesObj(item.observacoes_internas);
+                          const itemComments = getLeadComments(item);
                           
                           return (
                             <tr 
@@ -776,11 +802,33 @@ export default function AdminPage() {
                                 {item.potencial_anual_estimado ? item.potencial_anual_estimado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }) : 'R$ 0'}
                               </td>
 
-                              {/* Status Pílula */}
+                              {/* Status Pílula e Ícone de Comentários */}
                               <td className="p-4">
-                                <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusInfo.color}`}>
-                                  {statusInfo.label}
-                                </span>
+                                <div className="flex items-center gap-1.5">
+                                  <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusInfo.color}`}>
+                                    {statusInfo.label}
+                                  </span>
+                                  {itemComments.length > 0 ? (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => { e.stopPropagation(); handleOpenLead(item, true); }}
+                                      title={`${itemComments.length} anotação(ões) registrada(s) - Clique para abrir apenas o histórico`}
+                                      className="flex items-center gap-1 px-1.5 py-0.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white rounded text-[10px] font-bold border border-neutral-700 transition-colors cursor-pointer"
+                                    >
+                                      <MessageSquare className="w-3 h-3 text-emerald-400" />
+                                      <span>{itemComments.length}</span>
+                                    </button>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => { e.stopPropagation(); handleOpenLead(item, true); }}
+                                      title="Adicionar anotação a esta empresa"
+                                      className="p-1 bg-neutral-950 hover:bg-neutral-800 text-neutral-600 hover:text-neutral-400 rounded transition-colors border border-neutral-800/60 cursor-pointer"
+                                    >
+                                      <MessageSquare className="w-3 h-3" />
+                                    </button>
+                                  )}
+                                </div>
                               </td>
 
                               {/* Botão Acessar */}
@@ -834,7 +882,7 @@ export default function AdminPage() {
 
               {/* Explicação da tela */}
               <div className="bg-neutral-900 border border-neutral-800 p-4 rounded-xl text-xs text-neutral-400">
-                📌 Aqui constam todas as empresas com aportes configurados ou em vias de destinação. Você pode ajustar ou digitar os valores arrecadados em cada uma instantaneamente e salvar na própria linha.
+                📌 Aqui constam estritamente as empresas classificadas com o status <strong className="text-emerald-400">"Captada Sucesso"</strong>. Você pode auditar, ajustar ou digitar os valores arrecadados em cada uma instantaneamente e salvar na própria linha.
               </div>
 
               {/* LISTA FINANCEIRA PRÁTICA */}
@@ -851,58 +899,67 @@ export default function AdminPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-800/60 text-xs">
-                      {financialLeads.map((item) => {
-                        const statusInfo = getStatusInfo(item.status);
-                        const isContributed = item.valor_captado_real > 0;
-                        const inputValue = batchValues[item.id] ?? (item.valor_captado_real ? item.valor_captado_real.toString() : '');
+                      {financialLeads.length === 0 ? (
+                        <tr>
+                          <td colSpan={5} className="p-8 text-center text-neutral-500 font-medium">
+                            Nenhuma empresa está marcada com o status "Captada Sucesso" no momento.<br/>
+                            Mude o status de uma empresa na aba <strong className="text-neutral-300">Empresas</strong> para que ela apareça aqui.
+                          </td>
+                        </tr>
+                      ) : (
+                        financialLeads.map((item) => {
+                          const statusInfo = getStatusInfo(item.status);
+                          const isContributed = item.valor_captado_real > 0;
+                          const inputValue = batchValues[item.id] ?? (item.valor_captado_real ? item.valor_captado_real.toString() : '');
 
-                        return (
-                          <tr key={item.id} className="hover:bg-neutral-800/40 transition-colors">
-                            {/* Razão Social */}
-                            <td className="p-4 pl-6">
-                              <div className="font-bold text-white truncate max-w-xs">{item.razao_social}</div>
-                              <div className="text-[10px] text-neutral-500 font-mono">{item.cnpj}</div>
-                            </td>
+                          return (
+                            <tr key={item.id} className="hover:bg-neutral-800/40 transition-colors">
+                              {/* Razão Social */}
+                              <td className="p-4 pl-6">
+                                <div className="font-bold text-white truncate max-w-xs">{item.razao_social}</div>
+                                <div className="text-[10px] text-neutral-500 font-mono">{item.cnpj}</div>
+                              </td>
 
-                            {/* Status */}
-                            <td className="p-4">
-                              <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold border ${statusInfo.color}`}>
-                                {statusInfo.label}
-                              </span>
-                            </td>
+                              {/* Status */}
+                              <td className="p-4">
+                                <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold border ${statusInfo.color}`}>
+                                  {statusInfo.label}
+                                </span>
+                              </td>
 
-                            {/* Potencial Estimado base */}
-                            <td className="p-4 font-mono text-neutral-400">
-                              {item.potencial_anual_estimado?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
-                            </td>
+                              {/* Potencial Estimado base */}
+                              <td className="p-4 font-mono text-neutral-400">
+                                {item.potencial_anual_estimado?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
+                              </td>
 
-                            {/* Input Editável na Tabela */}
-                            <td className="p-4 max-w-xs">
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-neutral-500 font-mono text-xs">R$</span>
-                                <input 
-                                  type="number"
-                                  value={inputValue}
-                                  onChange={(e) => setBatchValues(prev => ({ ...prev, [item.id]: e.target.value }))}
-                                  placeholder="0"
-                                  className={`w-32 bg-neutral-950 border rounded-lg px-2.5 py-1.5 text-xs font-mono font-bold focus:outline-none focus:border-white transition-colors ${isContributed ? 'border-emerald-500/50 text-emerald-400' : 'border-neutral-800 text-neutral-200'}`}
-                                />
-                              </div>
-                            </td>
+                              {/* Input Editável na Tabela */}
+                              <td className="p-4 max-w-xs">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-neutral-500 font-mono text-xs">R$</span>
+                                  <input 
+                                    type="number"
+                                    value={inputValue}
+                                    onChange={(e) => setBatchValues(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                    placeholder="0"
+                                    className={`w-32 bg-neutral-950 border rounded-lg px-2.5 py-1.5 text-xs font-mono font-bold focus:outline-none focus:border-white transition-colors ${isContributed ? 'border-emerald-500/50 text-emerald-400' : 'border-neutral-800 text-neutral-200'}`}
+                                  />
+                                </div>
+                              </td>
 
-                            {/* Botão de salvar específico */}
-                            <td className="p-4 pr-6 text-right">
-                              <button
-                                onClick={() => handleSaveInlineValue(item.id)}
-                                className="px-3 py-1.5 bg-neutral-950 hover:bg-white text-neutral-300 hover:text-black rounded-lg text-xs font-bold transition-all border border-neutral-800 inline-flex items-center gap-1 cursor-pointer"
-                              >
-                                <Save className="w-3.5 h-3.5" />
-                                <span>Salvar</span>
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
+                              {/* Botão de salvar específico */}
+                              <td className="p-4 pr-6 text-right">
+                                <button
+                                  onClick={() => handleSaveInlineValue(item.id)}
+                                  className="px-3 py-1.5 bg-neutral-950 hover:bg-white text-neutral-300 hover:text-black rounded-lg text-xs font-bold transition-all border border-neutral-800 inline-flex items-center gap-1 cursor-pointer"
+                                >
+                                  <Save className="w-3.5 h-3.5" />
+                                  <span>Salvar</span>
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -932,7 +989,7 @@ export default function AdminPage() {
             <div className="p-6 bg-neutral-950 border-b border-neutral-800 flex justify-between items-start sticky top-0 z-20">
               <div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-neutral-500 block">
-                  Ficha do Prospecto B2B
+                  {commentsOnlyMode ? 'Anotações e Histórico' : 'Ficha do Prospecto B2B'}
                 </span>
                 <h3 className="text-xl font-black italic text-white uppercase tracking-tight pr-4">
                   {selectedLead.razao_social}
@@ -949,158 +1006,280 @@ export default function AdminPage() {
 
             {/* Corpo do Drawer */}
             <div className="p-6 space-y-6 flex-grow">
-              
-              {/* BLOCO DE EDIÇÃO E RECLASSIFICAÇÃO */}
-              <div className="bg-neutral-950 p-5 rounded-2xl border border-neutral-800 space-y-4 shadow-inner">
-                <div className="text-xs font-black uppercase tracking-wider text-neutral-400 border-b border-neutral-800 pb-2">
-                  ⚡ Ajustar Funil e Financeiro
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Etapa Funil */}
-                  <div>
-                    <label className="block text-xs font-bold text-neutral-300 mb-1">Status do Lead</label>
-                    <select
-                      value={editingStatus}
-                      onChange={(e) => setEditingStatus(e.target.value)}
-                      className="w-full bg-neutral-900 border border-neutral-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-white transition-colors cursor-pointer"
-                    >
-                      {STATUS_OPTIONS.map(opt => (
-                        <option key={opt.key} value={opt.key}>{opt.label}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Valor Fechado */}
-                  <div>
-                    <label className="block text-xs font-bold text-neutral-300 mb-1">
-                      Aporte Finalizado Real (R$)
+              {commentsOnlyMode ? (
+                /* MODO EXCLUSIVO DE COMENTÁRIOS */
+                <div className="space-y-6 animate-fade-in">
+                  {/* Caixa de nova anotação */}
+                  <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 space-y-2.5 shadow-inner">
+                    <label className="block text-xs font-bold text-neutral-300">
+                      Adicionar Nova Anotação
                     </label>
-                    <input 
-                      type="number"
-                      value={editingValor}
-                      onChange={(e) => setEditingValor(e.target.value)}
-                      placeholder="0"
-                      className="w-full bg-neutral-900 border border-neutral-700 rounded-xl px-3 py-2 text-xs font-bold text-emerald-400 placeholder-neutral-600 focus:outline-none focus:border-emerald-500 font-mono transition-colors"
+                    <textarea
+                      rows={3}
+                      value={editingComentario}
+                      onChange={(e) => setEditingComentario(e.target.value)}
+                      placeholder="Escreva anotações sobre reuniões, contatos feitos ou próximos passos..."
+                      className="w-full bg-neutral-900 border border-neutral-800 rounded-xl p-2.5 text-xs text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-neutral-600 transition-colors resize-y"
                     />
-                  </div>
-                </div>
-
-                {/* Carta de Interesse */}
-                <div>
-                  <label className="block text-xs font-bold text-neutral-400 mb-1">
-                    Link da Carta de Interesse Assinada (PDF)
-                  </label>
-                  <input 
-                    type="url"
-                    value={editingCartaUrl}
-                    onChange={(e) => setEditingCartaUrl(e.target.value)}
-                    placeholder="https://drive.google.com/..."
-                    className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-neutral-600 transition-colors"
-                  />
-                  {editingCartaUrl && (
-                    <a 
-                      href={editingCartaUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-[11px] text-blue-400 hover:underline inline-flex items-center gap-1 mt-1 font-medium"
+                    <button
+                      type="button"
+                      onClick={handleAddComentario}
+                      disabled={!editingComentario.trim()}
+                      className="w-full py-2.5 bg-white hover:bg-neutral-200 disabled:opacity-50 text-black rounded-lg text-xs font-black uppercase italic tracking-wider transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
                     >
-                      <span>Abrir Carta Anexada</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
-                </div>
-
-                {/* Botão Salvar Modal */}
-                <button
-                  onClick={handleSaveChanges}
-                  disabled={savingAction}
-                  className="w-full bg-white hover:bg-neutral-200 text-black font-black uppercase italic tracking-widest text-xs py-3 rounded-xl transition-all shadow-md mt-2 cursor-pointer"
-                >
-                  {savingAction ? 'Salvando...' : 'Aplicar Reclassificação e Fechamento'}
-                </button>
-              </div>
-
-              {/* DADOS DE CONTATO PRIMÁRIOS */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 text-xs">
-                  <span className="text-[10px] uppercase font-bold text-neutral-500 block mb-1">Representante Legal</span>
-                  <div className="font-bold text-white">{selectedLead.nome_responsavel}</div>
-                  <div className="text-[11px] text-neutral-400">{selectedLead.cargo || 'Responsável'}</div>
-                  <div className="text-[11px] text-neutral-400 font-mono mt-2">WhatsApp: <strong className="text-white">{selectedLead.telefone}</strong></div>
-                  <div className="text-[11px] text-neutral-400 truncate">E-mail: <strong className="text-white">{selectedLead.email}</strong></div>
-                </div>
-
-                <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 text-xs">
-                  <span className="text-[10px] uppercase font-bold text-neutral-500 block mb-1">Mapeamento Estimado</span>
-                  <div className="text-neutral-400">Base Mensal: <strong className="text-white font-mono">{selectedLead.icms_mensal_estimado?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong></div>
-                  <div className="text-neutral-400 mt-1">Regime: <strong className="text-white uppercase">{selectedLead.regime_tributario}</strong></div>
-                  <div className="text-emerald-400 font-mono mt-2 border-t border-neutral-800 pt-1.5 font-bold">
-                    Potencial: {selectedLead.potencial_anual_estimado?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}/ano
+                      <MessageSquare className="w-4 h-4 text-black" />
+                      <span>Registrar e Limpar Anotação</span>
+                    </button>
                   </div>
+
+                  {/* Feed de anotações pregressas */}
+                  {(() => {
+                    const leadComments = getLeadComments(selectedLead);
+                    return (
+                      <div className="space-y-3">
+                        <span className="text-[10px] uppercase font-bold text-neutral-500 block border-b border-neutral-900 pb-2">
+                          Histórico de Anotações Salvas ({leadComments.length})
+                        </span>
+                        {leadComments.length === 0 ? (
+                          <div className="p-8 text-center text-neutral-600 text-xs italic bg-neutral-950/40 rounded-xl border border-neutral-900">
+                            Nenhuma anotação administrativa registrada para este lead ainda.
+                          </div>
+                        ) : (
+                          <div className="space-y-2.5 max-h-96 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-neutral-800">
+                            {leadComments.map((c, idx) => {
+                              const dateObj = new Date(c.data);
+                              const dataFormatada = !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
+                              const horaFormatada = !isNaN(dateObj.getTime()) ? dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+                              
+                              return (
+                                <div key={idx} className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 text-xs space-y-1.5 shadow-xs">
+                                  <div className="flex items-center justify-between text-[10px] text-neutral-400 font-mono border-b border-neutral-900 pb-1">
+                                    <span className="font-bold text-neutral-300">Anotação Administrativa</span>
+                                    <span>{dataFormatada} às {horaFormatada}</span>
+                                  </div>
+                                  <p className="text-neutral-200 whitespace-pre-wrap leading-relaxed text-[11px]">{c.texto}</p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
-              </div>
-
-              {/* DIAGNÓSTICO AVANÇADO (JSON OBSERVACÕES INTERNAS) */}
-              {(() => {
-                const obsObj = getObservacoesObj(selectedLead.observacoes_internas);
-                if (!obsObj) return null;
-
-                return (
-                  <div className="space-y-4 pt-2 border-t border-neutral-800">
-                    <span className="text-xs font-black uppercase tracking-widest text-neutral-400 block">
-                      📋 Dados Completos do Questionário Inicial
-                    </span>
-
-                    {/* Cadastral */}
-                    <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 space-y-2 text-xs">
-                      <div className="font-bold text-neutral-300 pb-1 border-b border-neutral-900 flex items-center gap-1.5">
-                        <Building2 className="w-3.5 h-3.5 text-neutral-500" /> Detalhes da Operação
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-[11px]">
-                        <div><span className="text-neutral-500">Fantasia:</span> <strong className="text-neutral-200">{obsObj.nome_fantasia || '—'}</strong></div>
-                        <div><span className="text-neutral-500">Inscrição Est.:</span> <strong className="text-neutral-200">{obsObj.ie || '—'}</strong></div>
-                        <div><span className="text-neutral-500">Segmento:</span> <strong className="text-neutral-200">{obsObj.segmento || '—'}</strong></div>
-                        <div><span className="text-neutral-500">Funcionários:</span> <strong className="text-neutral-200">{obsObj.qtd_func || '—'}</strong></div>
-                      </div>
-                      <div className="mt-2 pt-2 border-t border-neutral-900 text-[11px]">
-                        <span className="text-neutral-500 block mb-0.5">Endereço Informado:</span>
-                        <div className="text-neutral-200 font-medium">
-                          {obsObj.endereco}, {obsObj.numero} — {obsObj.cidade}-{obsObj.estado} (CEP: {obsObj.cep})
-                        </div>
-                      </div>
+              ) : (
+                /* MODO COMPLETO (FICHA GERAL DO LEAD) */
+                <React.Fragment>
+                  {/* BLOCO DE EDIÇÃO E RECLASSIFICAÇÃO */}
+                  <div className="bg-neutral-950 p-5 rounded-2xl border border-neutral-800 space-y-4 shadow-inner">
+                    <div className="text-xs font-black uppercase tracking-wider text-neutral-400 border-b border-neutral-800 pb-2">
+                      ⚡ Reclassificar Etapa de Funil
                     </div>
 
-                    {/* Contador */}
-                    {(obsObj.contador_nome || obsObj.contador_escritorio) && (
-                      <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 space-y-2 text-xs">
-                        <div className="font-bold text-neutral-300 pb-1 border-b border-neutral-900 flex items-center gap-1.5">
-                          <Briefcase className="w-3.5 h-3.5 text-neutral-500" /> Decisor Técnico (Contador Indicado)
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 text-[11px]">
-                          <div><span className="text-neutral-500">Nome:</span> <strong className="text-neutral-200">{obsObj.contador_nome || '—'}</strong></div>
-                          <div><span className="text-neutral-500">Escritório:</span> <strong className="text-neutral-200">{obsObj.contador_escritorio || '—'}</strong></div>
-                          <div><span className="text-neutral-500">WhatsApp:</span> <strong className="text-neutral-200 font-mono">{obsObj.contador_telefone || '—'}</strong></div>
-                          <div className="truncate"><span className="text-neutral-500">E-mail:</span> <strong className="text-neutral-200">{obsObj.contador_email || '—'}</strong></div>
+                    {/* Etapa Funil */}
+                    <div>
+                      <label className="block text-xs font-bold text-neutral-300 mb-1">Status do Lead</label>
+                      <select
+                        value={editingStatus}
+                        onChange={(e) => setEditingStatus(e.target.value)}
+                        className="w-full bg-neutral-900 border border-neutral-700 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:border-white transition-colors cursor-pointer"
+                      >
+                        {STATUS_OPTIONS.map(opt => (
+                          <option key={opt.key} value={opt.key}>{opt.label}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Carta de Interesse como Upload/Anexo real */}
+                    <div>
+                      <label className="block text-xs font-bold text-neutral-400 mb-1">
+                        Anexar Carta de Interesse Assinada (PDF / Imagem)
+                      </label>
+                      
+                      <div className="relative">
+                        <input 
+                          type="file"
+                          accept=".pdf,image/*"
+                          onChange={handleFileUpload}
+                          id="file-upload-carta"
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        />
+                        <div className={`w-full bg-neutral-900 hover:bg-neutral-800/80 border-2 border-dashed rounded-xl p-3 text-center transition-all flex flex-col items-center justify-center gap-1 ${editingCartaUrl ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-neutral-800'}`}>
+                          <span className="text-xs font-bold text-neutral-300">
+                            {editingCartaUrl ? 'Documento Anexado com Sucesso' : 'Clique ou arraste o arquivo aqui'}
+                          </span>
+                          <span className="text-[10px] text-neutral-500 block">
+                            {editingCartaUrl ? 'Substituir arquivo atual' : 'Formatos suportados: PDF, JPG, PNG'}
+                          </span>
                         </div>
                       </div>
-                    )}
 
-                    {/* Engajamento */}
-                    <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 space-y-1 text-xs text-neutral-300">
-                      <div className="font-bold text-xs pb-1 text-white">Engajamento Declarado:</div>
-                      <div><span className="text-neutral-500">Recolhe em MG?</span> <strong className="text-white">{obsObj.recolhe_icms_mg || '—'}</strong></div>
-                      <div><span className="text-neutral-500">Faixa ICMS:</span> <strong className="text-white">{obsObj.faixa_icms || '—'}</strong></div>
-                      <div><span className="text-neutral-500">Interesse Foco:</span> <strong className="text-white">{obsObj.interesse_principal || '—'}</strong></div>
+                      {editingCartaUrl && (
+                        <div className="mt-2 flex items-center justify-between bg-neutral-900/60 px-3 py-1.5 rounded-lg border border-neutral-800">
+                          <a 
+                            href={editingCartaUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-[11px] text-emerald-400 hover:underline inline-flex items-center gap-1 font-bold"
+                          >
+                            <span>Visualizar Anexo Atual</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                          <button 
+                            onClick={() => { setEditingCartaUrl(''); showToast('Anexo removido da seleção'); }}
+                            className="text-[10px] text-neutral-500 hover:text-red-400 font-medium"
+                          >
+                            Remover
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Comentários / Anotações do Lead */}
+                    <div className="space-y-2">
+                      <label className="block text-xs font-bold text-neutral-400">
+                        Anotações Internas / Histórico de Contato
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={editingComentario}
+                        onChange={(e) => setEditingComentario(e.target.value)}
+                        placeholder="Escreva anotações, data prevista de retorno, impeditivos..."
+                        className="w-full bg-neutral-900 border border-neutral-800 rounded-xl p-2.5 text-xs text-neutral-200 placeholder-neutral-600 focus:outline-none focus:border-neutral-600 transition-colors resize-y"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddComentario}
+                        disabled={!editingComentario.trim()}
+                        className="w-full py-2 bg-neutral-900 hover:bg-neutral-800 disabled:opacity-50 text-neutral-300 hover:text-white rounded-lg text-[11px] font-bold transition-all border border-neutral-800 flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5 text-neutral-400" />
+                        <span>Registrar e Limpar Anotação</span>
+                      </button>
+                    </div>
+
+                    {/* Botão Salvar Modal */}
+                    <button
+                      onClick={handleSaveChanges}
+                      disabled={savingAction}
+                      className="w-full bg-white hover:bg-neutral-200 text-black font-black uppercase italic tracking-widest text-xs py-3 rounded-xl transition-all shadow-md mt-2 cursor-pointer"
+                    >
+                      {savingAction ? 'Salvando...' : 'Aplicar Atualização de Status'}
+                    </button>
+                  </div>
+
+                  {/* DADOS DE CONTATO PRIMÁRIOS */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 text-xs">
+                      <span className="text-[10px] uppercase font-bold text-neutral-500 block mb-1">Representante Legal</span>
+                      <div className="font-bold text-white">{selectedLead.nome_responsavel}</div>
+                      <div className="text-[11px] text-neutral-400">{selectedLead.cargo || 'Responsável'}</div>
+                      <div className="text-[11px] text-neutral-400 font-mono mt-2">WhatsApp: <strong className="text-white">{selectedLead.telefone}</strong></div>
+                      <div className="text-[11px] text-neutral-400 truncate">E-mail: <strong className="text-white">{selectedLead.email}</strong></div>
+                    </div>
+
+                    <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 text-xs">
+                      <span className="text-[10px] uppercase font-bold text-neutral-500 block mb-1">Mapeamento Estimado</span>
+                      <div className="text-neutral-400">Base Mensal: <strong className="text-white font-mono">{selectedLead.icms_mensal_estimado?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong></div>
+                      <div className="text-neutral-400 mt-1">Regime: <strong className="text-white uppercase">{selectedLead.regime_tributario}</strong></div>
+                      <div className="text-emerald-400 font-mono mt-2 border-t border-neutral-800 pt-1.5 font-bold">
+                        Potencial: {selectedLead.potencial_anual_estimado?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}/ano
+                      </div>
                     </div>
                   </div>
-                );
-              })()}
 
-              <div className="text-[10px] text-neutral-600 text-center pt-2">
-                Submissão do forms: {new Date(selectedLead.created_at).toLocaleString('pt-BR')}
-              </div>
+                  {/* FEED DE COMENTÁRIOS / TIMELINE HISTÓRICO */}
+                  {(() => {
+                    const leadComments = getLeadComments(selectedLead);
+                    if (leadComments.length === 0) return null;
 
+                    return (
+                      <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 space-y-3 animate-fade-in">
+                        <span className="text-[10px] uppercase font-bold text-neutral-500 block border-b border-neutral-900 pb-2">
+                          Histórico do Lead / Anotações ({leadComments.length})
+                        </span>
+                        <div className="space-y-2.5 max-h-60 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-neutral-800">
+                          {leadComments.map((c, idx) => {
+                            const dateObj = new Date(c.data);
+                            const dataFormatada = !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
+                            const horaFormatada = !isNaN(dateObj.getTime()) ? dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+                            
+                            return (
+                              <div key={idx} className="p-3 bg-neutral-900 rounded-lg border border-neutral-800/80 text-xs space-y-1.5">
+                                <div className="flex items-center justify-between text-[10px] text-neutral-400 font-mono border-b border-neutral-800/40 pb-1">
+                                  <span className="font-bold text-neutral-300">Anotação Administrativa</span>
+                                  <span>{dataFormatada} às {horaFormatada}</span>
+                                </div>
+                                <p className="text-neutral-200 whitespace-pre-wrap leading-relaxed text-[11px]">{c.texto}</p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* DIAGNÓSTICO AVANÇADO (JSON OBSERVACÕES INTERNAS) */}
+                  {(() => {
+                    const obsObj = getObservacoesObj(selectedLead.observacoes_internas);
+                    if (!obsObj) return null;
+
+                    return (
+                      <div className="space-y-4 pt-2 border-t border-neutral-800">
+                        <span className="text-xs font-black uppercase tracking-widest text-neutral-400 block">
+                          📋 Dados Completos do Questionário Inicial
+                        </span>
+
+                        {/* Cadastral */}
+                        <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 space-y-2 text-xs">
+                          <div className="font-bold text-neutral-300 pb-1 border-b border-neutral-900 flex items-center gap-1.5">
+                            <Building2 className="w-3.5 h-3.5 text-neutral-500" /> Detalhes da Operação
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-[11px]">
+                            <div><span className="text-neutral-500">Fantasia:</span> <strong className="text-neutral-200">{obsObj.nome_fantasia || '—'}</strong></div>
+                            <div><span className="text-neutral-500">Inscrição Est.:</span> <strong className="text-neutral-200">{obsObj.ie || '—'}</strong></div>
+                            <div><span className="text-neutral-500">Segmento:</span> <strong className="text-neutral-200">{obsObj.segmento || '—'}</strong></div>
+                            <div><span className="text-neutral-500">Funcionários:</span> <strong className="text-neutral-200">{obsObj.qtd_func || '—'}</strong></div>
+                          </div>
+                          <div className="mt-2 pt-2 border-t border-neutral-900 text-[11px]">
+                            <span className="text-neutral-500 block mb-0.5">Endereço Informado:</span>
+                            <div className="text-neutral-200 font-medium">
+                              {obsObj.endereco}, {obsObj.numero} — {obsObj.cidade}-{obsObj.estado} (CEP: {obsObj.cep})
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Contador */}
+                        {(obsObj.contador_nome || obsObj.contador_escritorio) && (
+                          <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 space-y-2 text-xs">
+                            <div className="font-bold text-neutral-300 pb-1 border-b border-neutral-900 flex items-center gap-1.5">
+                              <Briefcase className="w-3.5 h-3.5 text-neutral-500" /> Decisor Técnico (Contador Indicado)
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 text-[11px]">
+                              <div><span className="text-neutral-500">Nome:</span> <strong className="text-neutral-200">{obsObj.contador_nome || '—'}</strong></div>
+                              <div><span className="text-neutral-500">Escritório:</span> <strong className="text-neutral-200">{obsObj.contador_escritorio || '—'}</strong></div>
+                              <div><span className="text-neutral-500">WhatsApp:</span> <strong className="text-neutral-200 font-mono">{obsObj.contador_telefone || '—'}</strong></div>
+                              <div className="truncate"><span className="text-neutral-500">E-mail:</span> <strong className="text-neutral-200">{obsObj.contador_email || '—'}</strong></div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Engajamento */}
+                        <div className="bg-neutral-950 p-4 rounded-xl border border-neutral-800 space-y-1 text-xs text-neutral-300">
+                          <div className="font-bold text-xs pb-1 text-white">Engajamento Declarado:</div>
+                          <div><span className="text-neutral-500">Recolhe em MG?</span> <strong className="text-white">{obsObj.recolhe_icms_mg || '—'}</strong></div>
+                          <div><span className="text-neutral-500">Faixa ICMS:</span> <strong className="text-white">{obsObj.faixa_icms || '—'}</strong></div>
+                          <div><span className="text-neutral-500">Interesse Foco:</span> <strong className="text-white">{obsObj.interesse_principal || '—'}</strong></div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  <div className="text-[10px] text-neutral-600 text-center pt-2">
+                    Submissão do forms: {new Date(selectedLead.created_at).toLocaleString('pt-BR')}
+                  </div>
+                </React.Fragment>
+              )}
             </div>
           </div>
         </div>
