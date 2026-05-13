@@ -73,10 +73,12 @@ export default function SupportPage() {
       </header>
 
       {/* PERCEPTION SHIFT MINDSET BANNER */}
-      <div className="bg-[#E4F100] text-black py-3 px-6 border-b border-black/5 shadow-sm">
+      <div className="bg-gradient-to-r from-neutral-200 via-neutral-100 to-neutral-300 text-black py-3 px-4 sm:px-6 border-b border-neutral-300 shadow-sm overflow-hidden">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-center sm:text-left">
-          <span className="font-black uppercase tracking-widest text-[10px] bg-black text-white px-2 py-0.5 rounded">Atenção</span>
-          <p className="text-xs md:text-sm font-black tracking-tight uppercase">
+          <span className="font-black uppercase tracking-widest text-[9px] sm:text-[10px] bg-black text-white px-2 py-0.5 rounded flex-shrink-0">
+            Estratégico
+          </span>
+          <p className="text-[11px] sm:text-xs md:text-sm font-black tracking-tight uppercase leading-snug break-words">
             Você não gasta com patrocínio. Você direciona seu imposto para gerar impacto local.
           </p>
         </div>
@@ -115,10 +117,10 @@ export default function SupportPage() {
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(228,241,0,0.05)_0,transparent_60%)] pointer-events-none" />
             
             <div className="max-w-4xl mx-auto text-center relative z-10">
-              <span className="inline-block border border-white/10 px-4 py-1.5 text-[10px] md:text-xs uppercase tracking-[0.3em] font-black mb-6 rounded-full bg-white/5 text-neutral-400">
+              <span className="inline-block border border-white/10 px-3 sm:px-4 py-1.5 text-[9px] sm:text-[10px] md:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] font-black mb-4 sm:mb-6 rounded-full bg-white/5 text-neutral-400 max-w-full truncate">
                 Redirecionamento Inteligente de Imposto
               </span>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-black uppercase italic tracking-tighter mb-6 leading-tight">
+              <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-black uppercase italic tracking-tight mb-4 sm:mb-6 leading-tight break-words">
                 TRANSFORME O IMPOSTO QUE VOCÊ JÁ PAGA EM PUBLICIDADE E EXPOSIÇÃO PARA SUA EMPRESA.
               </h1>
               <p className="text-neutral-300 text-sm md:text-lg max-w-2xl mx-auto leading-relaxed font-medium">
@@ -145,12 +147,12 @@ export default function SupportPage() {
                 { step: "Passo 3", title: "Escolha da Cota", desc: "Apresentamos as cotas de patrocínio e contrapartidas disponíveis." },
                 { step: "Passo 4", title: "Aporte Oficial", desc: "O processo é realizado com total acompanhamento contábil e jurídico." }
               ].map((s, idx) => (
-                <div key={idx} className="bg-white border border-neutral-200 p-6 rounded-2xl relative shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-[#CC0000] bg-red-50 border border-red-100 px-2.5 py-1 rounded-full w-max mb-3">
+                <div key={idx} className="bg-white border border-neutral-200 p-5 sm:p-6 rounded-2xl relative shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                  <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-neutral-900 bg-neutral-100 border border-neutral-200 px-2.5 py-1 rounded-full w-max mb-3">
                     {s.step}
                   </span>
-                  <h4 className="font-bold text-base text-neutral-900 mb-2">{s.title}</h4>
-                  <p className="text-xs text-neutral-600 leading-relaxed mt-auto font-medium">{s.desc}</p>
+                  <h4 className="font-bold text-sm sm:text-base text-neutral-900 mb-1 sm:mb-2">{s.title}</h4>
+                  <p className="text-[11px] sm:text-xs text-neutral-600 leading-relaxed mt-auto font-medium">{s.desc}</p>
                 </div>
               ))}
             </div>

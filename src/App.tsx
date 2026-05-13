@@ -195,9 +195,9 @@ const VideoPitchSection = () => {
           Custo Zero para a sua Empresa
         </div>
         
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-black uppercase mb-10 tracking-tighter leading-tight drop-shadow-xl">
-          Transforme imposto em futuro.<br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-neutral-400">Apoie o Gameleira e mude vidas através do esporte.</span>
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black uppercase mb-8 md:mb-10 tracking-tight leading-tight drop-shadow-xl break-words max-w-full">
+          Transforme imposto em futuro.<br className="hidden sm:inline" />
+          <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-neutral-400 block sm:inline mt-1 sm:mt-0">Apoie o Gameleira e mude vidas através do esporte.</span>
         </h2>
 
         <div className="w-full max-w-4xl aspect-video bg-neutral-900 rounded-2xl md:rounded-3xl border border-white/10 shadow-2xl overflow-hidden relative group cursor-pointer flex items-center justify-center mb-10">
