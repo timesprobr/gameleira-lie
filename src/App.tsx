@@ -37,7 +37,9 @@ import {
   Share2,
   Bookmark,
   MoreHorizontal,
-  CheckCircle2
+  CheckCircle2,
+  Instagram,
+  MapPin
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from './lib/utils';
@@ -677,6 +679,50 @@ const InstitutionSection = () => {
 
           {/* Sombra decorativa posterior */}
           <div className="absolute -z-0 top-4 left-4 w-full h-full border border-white/5 rounded-2xl" />
+
+          {/* Cardzinho Preview do Instagram */}
+          <div className="mt-6 bg-white text-black p-4 md:p-5 rounded-2xl shadow-xl border border-neutral-200 flex flex-col sm:flex-row items-center gap-4 relative z-20">
+            {/* Foto de Perfil */}
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full border border-neutral-200 p-1 flex-shrink-0 bg-neutral-50 overflow-hidden">
+              <img src="/escudo.png" alt="Gameleira F7" className="w-full h-full object-contain" />
+            </div>
+
+            {/* Dados e Bio */}
+            <div className="flex-grow text-center sm:text-left">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 mb-1 justify-center sm:justify-start">
+                <span className="font-bold text-sm md:text-base tracking-tight text-neutral-900">gameleiraf7</span>
+                <span className="text-[10px] text-neutral-400 font-medium hidden sm:inline">•</span>
+                <span className="text-xs text-neutral-500 font-medium">Gameleira F7</span>
+              </div>
+
+              {/* Stats */}
+              <div className="flex justify-center sm:justify-start gap-3 text-[11px] md:text-xs text-neutral-700 font-medium mb-2">
+                <span><strong className="text-black">769</strong> posts</span>
+                <span><strong className="text-black">6.793</strong> seguidores</span>
+                <span><strong className="text-black">100</strong> seguindo</span>
+              </div>
+
+              {/* Bio descritiva */}
+              <div className="text-[11px] text-neutral-600 leading-snug space-y-0.5">
+                <div className="flex items-center justify-center sm:justify-start gap-1">
+                  <MapPin className="w-3 h-3 text-neutral-400" /> Ubaporanga-MG
+                </div>
+                <div>🏆 CAMPEÃO BRASILEIRO 2025</div>
+                <div>🏆 Campeão Mineiro 23</div>
+                <div>🥈 Vice Campeão Mineiro 25</div>
+              </div>
+            </div>
+
+            {/* Botão Seguir / Acessar */}
+            <a 
+              href="https://www.instagram.com/gameleiraf7/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-4 py-2 bg-neutral-900 hover:bg-black text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors shadow-xs flex-shrink-0 mt-2 sm:mt-0"
+            >
+              <Instagram className="w-3.5 h-3.5" /> Seguir
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -952,66 +998,24 @@ const FAQSection = () => {
   );
 };
 
-const ContactSection = () => {
-  return (
-    <section id="contato" className="py-32 px-6 bg-white relative overflow-hidden">
-      <div className="max-w-7xl mx-auto text-center relative z-10">
-        <SectionHeader title="Mude o Jogo" subtitle="Pronto para Começar?" />
-        
-        <h3 className="text-3xl md:text-5xl font-black uppercase mb-12 tracking-tighter leading-none italic">
-          Sua marca pode ser o <br />próximo reforço do Gameleira FC.
-        </h3>
-        
-        <div className="flex flex-col md:flex-row gap-8 justify-center items-center">
-           <a 
-            href="mailto:contato@gameleirafc.com.br"
-            className="flex items-center gap-4 group p-6 bg-neutral-50 hover:bg-black hover:text-white transition-all w-full max-w-sm"
-           >
-              <div className="w-12 h-12 bg-white border border-neutral-200 flex items-center justify-center text-black">
-                <Mail className="w-5 h-5" />
-              </div>
-              <div className="text-left">
-                <div className="text-[10px] uppercase font-black opacity-50">E-mail Oficial</div>
-                <div className="text-sm font-bold tracking-tight">contato@gameleirafc.com.br</div>
-              </div>
-           </a>
-           
-           <a 
-            href="https://wa.me/5531999999999"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-4 group p-6 bg-neutral-900 text-white hover:bg-neutral-800 transition-all w-full max-w-sm"
-           >
-              <div className="w-12 h-12 bg-white/10 flex items-center justify-center">
-                <MessageSquare className="w-5 h-5" />
-              </div>
-              <div className="text-left">
-                <div className="text-[10px] uppercase font-black opacity-50">WhatsApp Direto</div>
-                <div className="text-sm font-bold tracking-tight">Falar com Captação</div>
-              </div>
-           </a>
-        </div>
-      </div>
-      
-      {/* Visual background text */}
-      <div className="absolute -bottom-20 -left-20 text-[20vw] font-black opacity-[0.02] text-black italic pointer-events-none uppercase">
-        GFC
-      </div>
-    </section>
-  );
-};
-
 const Footer = () => {
   return (
     <footer className="bg-black text-white py-12 px-6 border-t border-white/5">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
         <div className="text-xl font-black italic">GAMELEIRA FC</div>
         <div className="text-[10px] uppercase tracking-[0.3em] opacity-40 text-center md:text-left">
-          © {new Date().getFullYear()} Associacao Esportiva Gameleira. <br className="md:hidden" /> todos os direitos reservados.
+          © {new Date().getFullYear()} Associação Esportiva Gameleira. <br className="md:hidden" /> todos os direitos reservados.
         </div>
-        <div className="flex gap-6 opacity-40 hover:opacity-100 transition-opacity">
-           <div className="text-[10px] uppercase font-bold tracking-widest cursor-pointer">Instagram</div>
-           <div className="text-[10px] uppercase font-bold tracking-widest cursor-pointer">LinkedIn</div>
+        <div>
+          <a 
+            href="https://www.instagram.com/gameleiraf7/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity group"
+          >
+            <Instagram className="w-4 h-4 text-neutral-400 group-hover:text-white transition-colors" />
+            <span className="text-xs uppercase font-bold tracking-widest">Instagram</span>
+          </a>
         </div>
       </div>
     </footer>
@@ -1038,7 +1042,6 @@ export default function App() {
       <InstitutionSection />
       <IncentiveLawSection />
       <FAQSection />
-      <ContactSection />
       <Footer />
 
       {/* Floating CTA */}
